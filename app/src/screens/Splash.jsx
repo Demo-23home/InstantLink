@@ -15,6 +15,7 @@ function SplashScreen() {
             color: 'white',
             textAlign: 'center',
             fontSize: 48,
+            fontFamily: 'LeckerliOne-Regular',
           }}>
           Realtime Chat
         </Text>
