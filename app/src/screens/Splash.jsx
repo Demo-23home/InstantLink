@@ -1,6 +1,28 @@
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {SafeAreaView, StatusBar, View, Animated} from 'react-native';
+import {useEffect} from 'react';
 import Title from '../common/Title';
 function SplashScreen() {
+  const translateY = new Animated.Value(0);
+  const duration = 800;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(translateY, {
+          toValue: 20,
+          duration: duration,
+          useNativeDriver: true,
+        }),
+
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: duration,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -10,9 +32,9 @@ function SplashScreen() {
         backgroundColor: 'black',
       }}>
       <StatusBar barStyle="light-content" />
-      <View>
+      <Animated.View style={[{transform: [{translateY}]}]}>
         <Title text="Realtime Chat" color="white" />
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }
