@@ -1,4 +1,5 @@
-import {SafeAreaView, StatusBar, Text, View} from 'react-native';
+import {SafeAreaView, StatusBar, View} from 'react-native';
+import Title from '../common/Title';
 function SplashScreen() {
   return (
     <SafeAreaView
@@ -10,15 +11,7 @@ function SplashScreen() {
       }}>
       <StatusBar barStyle="light-content" />
       <View>
-        <Text
-          style={{
-            color: 'white',
-            textAlign: 'center',
-            fontSize: 48,
-            fontFamily: 'LeckerliOne-Regular',
-          }}>
-          Realtime Chat
-        </Text>
+        <Title text="Realtime Chat" color="white" />
       </View>
     </SafeAreaView>
   );
