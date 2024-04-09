@@ -18,6 +18,7 @@ function Title({text, color}) {
         textAlign: 'center',
         fontSize: 48,
         fontFamily: 'LeckerliOne',
+        marginBottom:30
       }}>
       {text}
     </Text>

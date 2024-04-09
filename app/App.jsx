@@ -5,19 +5,27 @@ import SearchScreen from "./src/screens/Search";
 import SignInScreen from "./src/screens/SignIn";
 import SignUpScreen from "./src/screens/SignUp";
 import { React, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { StatusBar } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "./src/core/fontawesome";
+
+const lightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "white",
+  },
+};
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   const [initialized] = useState(true);
-  const [authenticated] = useState(true);
+  const [authenticated] = useState(false);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={lightTheme}>
       <StatusBar barStyle="dark-content" />
       <Stack.Navigator>
         {!initialized ? (
