@@ -2,17 +2,17 @@ import { View, Text, TextInput } from "react-native";
 
 
 
-function Input({ title, value, setValue }) {
+function Input({ title, value, setValue, error, setError }) {
     return (
       <View>
         <Text
           style={{
-            color: "#70747a",
+            color: error ? '#ff5555':"#70747a",
             marginVertical: 6,
             paddingLeft: 16,
           }}
         >
-          {title}
+          {error ? error : title}
         </Text>
         <TextInput
           style={{
@@ -21,10 +21,15 @@ function Input({ title, value, setValue }) {
             height: 52,
             paddingHorizontal: 16,
             fontSize: 16,
+            borderWidth:1,
+            borderColor: error? "#ff5555" :"transparent"
           }}
         value={value}
         onChangeText={text => {
           setValue(text)
+          if (error) {
+            setError('')
+          }
         }}
         />
 

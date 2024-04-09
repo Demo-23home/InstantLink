@@ -10,14 +10,37 @@ import { useLayoutEffect } from "react";
 import Title from "../common/Title";
 import Input from "../common/Input";
 import Button from "../common/Button";
+import { faI } from "@fortawesome/free-solid-svg-icons";
 
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   function onSignIn(username, password) {
     console.log(username, password);
+
+    // Check Username
+    const failUsername = !username;
+    if (failUsername) {
+      setUsernameError('Username Not Provided')
+    }
+    // Check Password
+    const failPassword = !password
+    if (failPassword) {
+      setPasswordError('Password Not Provided')
+    }
+    // Break Of the function if there were an error
+    if (failUsername || failPassword){
+      return 
+    }
+
+    // Make Signin Request
+    // ...
+
+
   }
 
   useLayoutEffect(() => {
@@ -44,13 +67,15 @@ const SignInScreen = ({ navigation }) => {
           title="Username"
           value={username}
           setValue={setUsername}
-
+          error={usernameError}
+          setError={setUsernameError}
         />
         <Input
           title="Password"
           value={password}
           setValue={setPassword}
-
+          error={passwordError}
+          setError={setPasswordError}
         />
         <Button title="Sign In" onPress={() => onSignIn(username, password)} />
         <Text style={{ textAlign: "center", marginTop: 40 }}>

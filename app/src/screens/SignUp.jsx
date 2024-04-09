@@ -35,7 +35,7 @@ const SignUpScreen = ({ navigation }) => {
         <Input title="Last Name" />
         <Input title="Password" />
         <Input title="Comfirm Password" />
-        <Button title="Sign Up" onPress={onSignIn}/>
+        <Button title="Sign Up" onPress={onSignUp}/>
         <Text style={{ textAlign: "center", marginTop: 40 }}>
           Already have an account?
           <Text
