@@ -25,22 +25,20 @@ const SignInScreen = ({ navigation }) => {
     // Check Username
     const failUsername = !username;
     if (failUsername) {
-      setUsernameError('Username Not Provided')
+      setUsernameError("Username Not Provided");
     }
     // Check Password
-    const failPassword = !password
+    const failPassword = !password;
     if (failPassword) {
-      setPasswordError('Password Not Provided')
+      setPasswordError("Password Not Provided");
     }
     // Break Of the function if there were an error
-    if (failUsername || failPassword){
-      return 
+    if (failUsername || failPassword) {
+      return;
     }
 
     // Make Signin Request
     // ...
-
-
   }
 
   useLayoutEffect(() => {
@@ -76,17 +74,18 @@ const SignInScreen = ({ navigation }) => {
           setValue={setPassword}
           error={passwordError}
           setError={setPasswordError}
+          secureTextEntry={true}
         />
         <Button title="Sign In" onPress={() => onSignIn(username, password)} />
         <Text style={{ textAlign: "center", marginTop: 40 }}>
-          Don't have an account?
+          Don't have an account
           <Text
             style={{
               color: "blue",
             }}
             onPress={() => navigation.navigate("SignUp")}
           >
-            Sign Up
+            ? Sign Up
           </Text>
         </Text>
       </View>
