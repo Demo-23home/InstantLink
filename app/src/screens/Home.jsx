@@ -5,15 +5,7 @@ import FriendsScreen from "./Friends";
 import ProfileScreen from "./Profile";
 import { useLayoutEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-
-// import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-// import {
-//   faUser,
-//   faUserFriends,
-//   faUserCircle,
-// }
-// from "@fortawesome/free-solid-svg-icons";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, Image } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,6 +19,20 @@ const HomeScreen = ({ navigation }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route, navigation }) => ({
+        headerLeft: () => (
+          <View style={{ marginLeft: 12, marginTop: 4 }}>
+            <Image
+              source={require("../assets/Profile.webp")}
+              style={{
+                width: 35,
+                height: 35,
+                // borderRadius: 14,
+                // backgroundColor: "#e0e0e0",
+              }}
+            />
+          </View>
+        ),
+
         headerRight: () => (
           <TouchableOpacity>
             <FontAwesomeIcon
