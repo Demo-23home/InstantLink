@@ -8,14 +8,12 @@ import { React, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import './src/core/fontawesome'
-
-
+import "./src/core/fontawesome";
 
 const Stack = createNativeStackNavigator();
 
 function App() {
-  const [initialized] = useState(true);
+  const [initialized] = useState(false);
   const [authenticated] = useState(true);
 
   return (
