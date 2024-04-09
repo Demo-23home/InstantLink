@@ -34,7 +34,7 @@ function App() {
           </>
         ) : !authenticated ? (
           <>
-            <Stack.Screen name="Signin" component={SignInScreen} />
+            <Stack.Screen name="SignIn" component={SignInScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
           </>
         ) : (

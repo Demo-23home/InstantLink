@@ -8,56 +8,12 @@ import {
 } from "react-native";
 import { useLayoutEffect } from "react";
 import Title from "../common/Title";
+import Input from "../common/Input";
+import Button from "../common/Button";
 
-function Input({ title }) {
-  return (
-    <View>
-      <Text
-        style={{
-          color: "#70747a",
-          marginVertical: 6,
-          paddingLeft: 16,
-        }}
-      >
-        {title}
-      </Text>
-      <TextInput
-        style={{
-          backgroundColor: "#e1e2e4",
-          borderRadius: 26,
-          height: 52,
-          paddingHorizontal: 16,
-          fontSize: 16,
-        }}
-      />
-    </View>
-  );
-}
 
-function Button({ title }) {
-  return (
-    <TouchableOpacity
-      style={{
-        backgroundColor: "#202020",
-        height: 52,
-        borderRadius: 26,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
-      }}
-    >
-      <Text
-        style={{
-          color: "white",
-          fontSize: 16,
-          fontWeight: "bold",
-        }}
-      >
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-}
+
+
 
 const SignInScreen = ({ navigation }) => {
   useLayoutEffect(() => {
@@ -91,7 +47,7 @@ const SignInScreen = ({ navigation }) => {
             }}
             onPress={() => navigation.navigate('SignUp')}
           >
-            Sing Up
+             Sign Up
           </Text>
         </Text>
       </View>
