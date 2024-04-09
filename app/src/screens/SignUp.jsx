@@ -11,6 +11,10 @@ const SignUpScreen = ({ navigation }) => {
     });
   }, []);
 
+  function onSignUp() {
+    console.log("OnSignUp");
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
@@ -31,7 +35,7 @@ const SignUpScreen = ({ navigation }) => {
         <Input title="Last Name" />
         <Input title="Password" />
         <Input title="Comfirm Password" />
-        <Button title="Sign Up" />
+        <Button title="Sign Up" onPress={onSignIn}/>
         <Text style={{ textAlign: "center", marginTop: 40 }}>
           Already have an account?
           <Text
@@ -40,7 +44,7 @@ const SignUpScreen = ({ navigation }) => {
             }}
             onPress={() => navigation.navigate("SignIn")}
           >
-             Sign In
+            Sign In
           </Text>
         </Text>
       </View>

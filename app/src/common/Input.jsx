@@ -2,7 +2,7 @@ import { View, Text, TextInput } from "react-native";
 
 
 
-function Input({ title }) {
+function Input({ title, value, setValue }) {
     return (
       <View>
         <Text
@@ -22,7 +22,12 @@ function Input({ title }) {
             paddingHorizontal: 16,
             fontSize: 16,
           }}
+        value={value}
+        onChangeText={text => {
+          setValue(text)
+        }}
         />
+
       </View>
     );
   }

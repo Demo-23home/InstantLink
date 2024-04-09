@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   Text,
@@ -11,11 +11,15 @@ import Title from "../common/Title";
 import Input from "../common/Input";
 import Button from "../common/Button";
 
-
-
-
-
 const SignInScreen = ({ navigation }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+
+  function onSignIn(username, password) {
+    console.log(username, password);
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -36,18 +40,28 @@ const SignInScreen = ({ navigation }) => {
         }}
       >
         <Title text="Realtime Chat" color="#202020" />
-        <Input title="Username" />
-        <Input title="Password" />
-        <Button title="Sign In" />
+        <Input
+          title="Username"
+          value={username}
+          setValue={setUsername}
+
+        />
+        <Input
+          title="Password"
+          value={password}
+          setValue={setPassword}
+
+        />
+        <Button title="Sign In" onPress={() => onSignIn(username, password)} />
         <Text style={{ textAlign: "center", marginTop: 40 }}>
           Don't have an account?
           <Text
             style={{
               color: "blue",
             }}
-            onPress={() => navigation.navigate('SignUp')}
+            onPress={() => navigation.navigate("SignUp")}
           >
-             Sign Up
+            Sign Up
           </Text>
         </Text>
       </View>
