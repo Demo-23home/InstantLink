@@ -1,5 +1,12 @@
-import {React, useState} from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import { React, useState } from "react";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Keyboard,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+} from "react-native";
 import { useLayoutEffect } from "react";
 import Input from "../common/Input";
 import Button from "../common/Button";
@@ -65,75 +72,79 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View
-        style={{ flex: 1, justifyContent: "center", paddingHorizontal: 16 }}
-      >
-        <Text
-          style={{
-            textAlign: "center",
-            marginBottom: 24,
-            fontSize: 36,
-            fontWeight: "bold",
-          }}
-        >
-          Sign Up
-        </Text>
-
-        <Input
-          title="Username"
-          value={username}
-          setValue={setUsername}
-          error={usernameError}
-          setError={setUsernameError}
-        />
-
-        <Input
-          title="First Name"
-          value={fristName}
-          setValue={setFristName}
-          error={fristNameError}
-          setError={setFristNameError}
-        />
-
-        <Input
-          title="Last Name"
-          value={lastName}
-          setValue={setLastName}
-          error={lastNameError}
-          setError={setLastNameError}
-        />
-
-        <Input
-          title="Password"
-          value={password1}
-          setValue={setPassword1}
-          error={password1Error}
-          setError={setPassword1Error}
-          secureTextEntry={true}
-        />
-
-        <Input
-          title="Comfirm Password"
-          value={password2}
-          setValue={setPassword2}
-          error={password2Error}
-          setError={setPassword2Error}
-          secureTextEntry={true}
-        />
-
-        <Button title="Sign Up" onPress={onSignUp} />
-        <Text style={{ textAlign: "center", marginTop: 40 }}>
-          Already have an account
-          <Text
-            style={{
-              color: "blue",
-            }}
-            onPress={() => navigation.navigate("SignIn")}
+      <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View
+            style={{ flex: 1, justifyContent: "center", paddingHorizontal: 16 }}
           >
-          ? Sign In
-          </Text>
-        </Text>
-      </View>
+            <Text
+              style={{
+                textAlign: "center",
+                marginBottom: 24,
+                fontSize: 36,
+                fontWeight: "bold",
+              }}
+            >
+              Sign Up
+            </Text>
+
+            <Input
+              title="Username"
+              value={username}
+              setValue={setUsername}
+              error={usernameError}
+              setError={setUsernameError}
+            />
+
+            <Input
+              title="First Name"
+              value={fristName}
+              setValue={setFristName}
+              error={fristNameError}
+              setError={setFristNameError}
+            />
+
+            <Input
+              title="Last Name"
+              value={lastName}
+              setValue={setLastName}
+              error={lastNameError}
+              setError={setLastNameError}
+            />
+
+            <Input
+              title="Password"
+              value={password1}
+              setValue={setPassword1}
+              error={password1Error}
+              setError={setPassword1Error}
+              secureTextEntry={true}
+            />
+
+            <Input
+              title="Comfirm Password"
+              value={password2}
+              setValue={setPassword2}
+              error={password2Error}
+              setError={setPassword2Error}
+              secureTextEntry={true}
+            />
+
+            <Button title="Sign Up" onPress={onSignUp} />
+            <Text style={{ textAlign: "center", marginTop: 40 }}>
+              Already have an account
+              <Text
+                style={{
+                  color: "blue",
+                }}
+                onPress={() => navigation.navigate("SignIn")}
+              >
+                ? Sign In
+              </Text>
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
