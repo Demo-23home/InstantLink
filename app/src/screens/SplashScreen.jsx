@@ -1,10 +1,10 @@
-import {SafeAreaView, StatusBar, Animated} from 'react-native';
-import { useLayoutEffect } from 'react';
+import { SafeAreaView, StatusBar, Animated } from "react-native";
+import { useLayoutEffect } from "react";
 
-import {useEffect} from 'react';
-import Title from '../common/Title';
+import { useEffect } from "react";
+import Title from "../common/Title";
 
-function SplashScreen({navigation}) {
+function SplashScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -28,20 +28,21 @@ function SplashScreen({navigation}) {
           duration: duration,
           useNativeDriver: true,
         }),
-      ]),
+      ])
     ).start();
   }, []);
 
   return (
     <SafeAreaView
       style={{
-        alignItems: 'center',
+        alignItems: "center",
         flex: 1,
-        justifyContent: 'center',
-        backgroundColor: 'black',
-      }}>
+        justifyContent: "center",
+        backgroundColor: "black",
+      }}
+    >
       <StatusBar barStyle="light-content" />
-      <Animated.View style={[{transform: [{translateY}]}]}>
+      <Animated.View style={[{ transform: [{ translateY }] }]}>
         <Title text="Realtime Chat" color="white" />
       </Animated.View>
     </SafeAreaView>

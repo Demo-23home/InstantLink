@@ -1,13 +1,16 @@
-import SplashScreen from './src/screens/Splash';
-import HomeScreen from './src/screens/Home';
-import MessagesScreen from './src/screens/Messages';
-import SearchScreen from './src/screens/Search';
-import SignInScreen from './src/screens/SignIn';
-import SignUpScreen from './src/screens/SignUp';
-import {React, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {StatusBar} from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import SplashScreen from "./src/screens/SplashScreen";
+import HomeScreen from "./src/screens/Home";
+import MessagesScreen from "./src/screens/Messages";
+import SearchScreen from "./src/screens/Search";
+import SignInScreen from "./src/screens/SignIn";
+import SignUpScreen from "./src/screens/SignUp";
+import { React, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import './src/core/fontawesome'
+
+
 
 const Stack = createNativeStackNavigator();
 
