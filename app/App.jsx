@@ -9,6 +9,8 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { StatusBar } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import "./src/core/fontawesome";
+import useGlobal from "./src/core/global";
+
 
 const lightTheme = {
   ...DefaultTheme,
@@ -22,7 +24,9 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   const [initialized] = useState(true);
-  const [authenticated] = useState(false);
+  const authenticated = useGlobal(state => state.authenticated)
+
+
 
   return (
     <NavigationContainer theme={lightTheme}>

@@ -11,6 +11,7 @@ import { useLayoutEffect } from "react";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import api from "../core/api";
+import useGlobal from "../core/global";
 
 
 
@@ -26,6 +27,10 @@ const SignUpScreen = ({ navigation }) => {
   const [lastNameError, setLastNameError] = useState("");
   const [password1Error, setPassword1Error] = useState("");
   const [password2Error, setPassword2Error] = useState("");
+
+
+  const login = useGlobal(state => state.login)
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -84,6 +89,7 @@ const SignUpScreen = ({ navigation }) => {
       },
     }).then((response) => {
       utils.log("Sign Un:", response.data);
+      login(response.data)
     })
     .catch((error) => {
       if (error.response) {
