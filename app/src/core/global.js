@@ -1,28 +1,26 @@
 import { create } from "zustand";
 
 const useGlobal = create((set) => ({
+  // -------------------------
+  // Authentication
+  // -------------------------
 
-    // -------------------------
-    // Authentication
-    // -------------------------
+  authenticated: false,
+  user: {},
 
-    authenticated : false,
-    user : {},
+  login: (user) => {
+    set((user) => ({
+      authenticated: true,
+      user: user,
+    }));
+  },
 
-    login: (user) => {
-        set((user) => ({
-            authenticated: true,
-            user: user
-        }))
-    },
-
-
-    logout: (user) => ({
-        authenticated: false,
-        user: {}
-    })
-
+  logout: () => {
+    set((state) =>({
+        authenticated:false,
+        user:{}
+    }))
+  },
 }));
-
 
 export default useGlobal;
