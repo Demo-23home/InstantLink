@@ -3,6 +3,14 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "thumbnail")
+        fields = ("username", "name", "thumbnail")
+
+
+    def get_name(self, obj):
+        fname = obj.first_name.capitalize()
+        lname = obj.last_name.capitalize()
+
+        return fname + ' ' + lname

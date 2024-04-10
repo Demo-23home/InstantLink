@@ -5,13 +5,14 @@ import {
   Text,
   TouchableWithoutFeedback,
   View,
-  KeyboardAvoidingView 
+  KeyboardAvoidingView,
 } from "react-native";
 import { useLayoutEffect } from "react";
 import Title from "../common/Title";
 import Input from "../common/Input";
 import Button from "../common/Button";
-import { faI } from "@fortawesome/free-solid-svg-icons";
+import api from "../core/api";
+import utils from "../core/utils";
 
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -39,7 +40,35 @@ const SignInScreen = ({ navigation }) => {
     }
 
     // Make Signin Request
-    // ...
+    api({
+      method: "POST",
+      url: "accounts/signin/",
+      data: {
+        username: username,
+        password: password,
+      },
+    })
+      .then((response) => {
+        utils.log("Sign In:", response.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
   }
 
   useLayoutEffect(() => {

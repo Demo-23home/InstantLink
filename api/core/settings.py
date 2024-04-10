@@ -25,15 +25,15 @@ SECRET_KEY = "django-insecure-(k1f#prn0p#)+=n_1q!m$zyj$*k4g^7dqo&)7y^%+##f9-a%mb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    #Admin Panel Custom Design
+    # Admin Panel Custom Design
     "jazzmin",
-    #Default Django Apps
+    # Default Django Apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # External Modules
     "rest_framework",
     "rest_framework_simplejwt",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -140,6 +142,18 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+# CORS_ALLOWED_ORIGINS = [
+#     "*"
+#     # "http://localhost:8080",  # React Native development server
+#     # "http://10.0.2.2:8080",    # Android emulator
+#     # "http://localhost:8000",   # Django development server
+#     # "http://127.0.0.1:8000",   # Django development server
+#     # # Add more origins if needed
+# ]
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Your Project API",
