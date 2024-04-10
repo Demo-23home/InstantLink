@@ -1,11 +1,14 @@
 import axios from "axios";
+import { Platform } from "react-native";
 
-// import axios from 'axios';
+const ADDRESS = Platform.OS === 'ios'
+  ? 'http://localhost:8000/'
+  : 'http://10.0.2.2:8000/'
 
 const api = axios.create({
-  baseURL: 'http://10.0.2.2:8000/',
+  baseURL: ADDRESS,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 

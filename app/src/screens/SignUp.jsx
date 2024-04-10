@@ -10,17 +10,19 @@ import {
 import { useLayoutEffect } from "react";
 import Input from "../common/Input";
 import Button from "../common/Button";
-import { faI, faRadiation } from "@fortawesome/free-solid-svg-icons";
+import api from "../core/api";
+
+
 
 const SignUpScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
-  const [fristName, setFristName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
 
   const [usernameError, setUsernameError] = useState("");
-  const [fristNameError, setFristNameError] = useState("");
+  const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [password1Error, setPassword1Error] = useState("");
   const [password2Error, setPassword2Error] = useState("");
@@ -40,9 +42,9 @@ const SignUpScreen = ({ navigation }) => {
       setUsernameError("Username Must Be >= 5 Characters");
     }
     //Check Firstname
-    const failFristName = !fristName;
+    const failFirstName = !firstName;
     if (failUsername) {
-      setFristNameError("Frist Name Not Provided");
+      setFirstNameError("Frist Name Not Provided");
     }
     // Check LastName
     const failLastName = !lastName;
@@ -61,13 +63,46 @@ const SignUpScreen = ({ navigation }) => {
     }
     // Break Out Of The Function If There Were An Error
     if (
-      failFristName ||
+      failFirstName ||
       failLastName ||
       failUsername ||
       failPassword1 ||
       failPassword2
-    )
+    ) {
       return;
+    }
+
+    // Make Signin Request
+    api({
+      method: "POST",
+      url: "accounts/signup/",
+      data: {
+        username: username,
+        first_name: firstName,
+        last_name: lastName,
+        password: password1,
+      },
+    }).then((response) => {
+      utils.log("Sign Un:", response.data);
+    })
+    .catch((error) => {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+      console.log(error.config);
+    });
   }
 
   return (
@@ -98,10 +133,10 @@ const SignUpScreen = ({ navigation }) => {
 
             <Input
               title="First Name"
-              value={fristName}
-              setValue={setFristName}
-              error={fristNameError}
-              setError={setFristNameError}
+              value={firstName}
+              setValue={setFirstName}
+              error={firstNameError}
+              setError={setFirstNameError}
             />
 
             <Input
