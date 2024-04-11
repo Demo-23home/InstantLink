@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-(k1f#prn0p#)+=n_1q!m$zyj$*k4g^7dqo&)7y^%+##f9-a%mb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", '10.0.2.2', '192.168.1.200']
+ALLOWED_HOSTS = ["localhost", "10.0.2.2", "192.168.1.200"]
 
 
 # Application definition
@@ -33,6 +33,15 @@ ALLOWED_HOSTS = ["localhost", '10.0.2.2', '192.168.1.200']
 INSTALLED_APPS = [
     # Admin Panel Custom Design
     "jazzmin",
+    # External Modules
+    "daphne",
+    "drf_spectacular",
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    # Internal Apps
+    "accounts",
+    "chat",
     # Default Django Apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -40,13 +49,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Internal Apps
-    "accounts",
-    "drf_spectacular",
-    # External Modules
-    "rest_framework",
-    "rest_framework_simplejwt",
-    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -135,6 +137,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 
+
+# Rest_Framework
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -143,21 +147,26 @@ REST_FRAMEWORK = {
 }
 
 
-# CORS_ALLOW_ALL_ORIGINS = True
-
-
-# CORS_ALLOWED_ORIGINS = [
-#     "*"
-#     # "http://localhost:8080",  # React Native development server
-#     # "http://10.0.2.2:8080",    # Android emulator
-#     # "http://localhost:8000",   # Django development server
-#     # "http://127.0.0.1:8000",   # Django development server
-#     # # Add more origins if needed
-# ]
-
+# Swagger
 SPECTACULAR_SETTINGS = {
     "TITLE": "Your Project API",
     "DESCRIPTION": "Your project description",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
+}
+
+# Thumbnail uploads
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
+
+# Daphne
+ASGI_APPLICATION = "core.asgi.application"
+
+
+# Channels
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", "6379")]},
+    }
 }

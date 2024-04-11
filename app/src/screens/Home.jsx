@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import RequestsScreen from "./Requests";
 import FriendsScreen from "./Friends";
@@ -6,6 +6,7 @@ import ProfileScreen from "./Profile";
 import { useLayoutEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { TouchableOpacity, View, Image } from "react-native";
+import useGlobal from "../core/global";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +16,17 @@ const HomeScreen = ({ navigation }) => {
       headerShown: false,
     });
   }, []);
+
+  const socketConnect = useGlobal(state => state.socketConnect)
+  const socketClose = useGlobal(state => state.socketClose)
+  
+  useEffect(()=> {
+    socketConnect()
+    return () =>{
+      socketClose()
+    }
+  }, [])
+
 
   return (
     <Tab.Navigator

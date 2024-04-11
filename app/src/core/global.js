@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import secure from "./secure";
-import api from "./api";
+import api, { ADDRESS } from "./api";
+import utils from "./utils";
 
 const useGlobal = create((set, get) => ({
   //---------------------
@@ -67,6 +68,41 @@ const useGlobal = create((set, get) => ({
       user: {},
     }));
   },
+
+  //---------------------
+  //     Websocket
+  //---------------------
+
+  socket: null,
+
+  socketConnect: async () => {
+    const tokens = await secure.get("tokens");
+
+    const url = `ws://${ADDRESS}/chat/?token=${tokens.access}`;
+
+    const socket = new WebSocket(url);
+    socket.onopen = () => {
+      utils.log("socket.onopen");
+    };
+
+    socket.onmessage = () => {
+      utils.log("socket.onmessage");
+    };
+    socket.onerror = (e) => {
+      utils.log("socket.onerror", e.message);
+    };
+    socket.onclose = () => {
+      utils.log("socket.onclose ");
+    };
+
+    set((state) => ({
+      socket: socket,
+    }));
+
+    utils.log("TOKENS:", tokens);
+  },
+
+  socketClose: () => {},
 }));
 
 export default useGlobal;
