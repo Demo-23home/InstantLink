@@ -2,6 +2,81 @@ import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import useGlobal from "../core/global";
+import utils from "../core/utils";
+import { useState } from "react";
+import * as ImagePicker from "expo-image-picker"; // Correct import
+
+function ProfileImage() {
+  const [image, setImage] = useState(null);
+
+  const openImagePicker = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+      base64: true, // Include base64 representation
+    });
+
+    if (!result.canceled) {
+      setImage(result.uri);
+      utils.log("Image Picker Result:", result);
+      // Use result.base64 for the base64 representation
+    } else {
+      utils.log("Image picker cancelled");
+    }
+  };
+
+  return (
+    <TouchableOpacity style={{ marginBottom: 20 }} onPress={openImagePicker}>
+      {image ? (
+        <Image
+          source={{ uri: image }}
+          style={{
+            width: 180,
+            height: 180,
+            borderRadius: 90,
+            backgroundColor: "#e0e0e0",
+          }}
+        />
+      ) : (
+        <Image
+          source={require("../assets/Profile.webp")}
+          style={{
+            width: 180,
+            height: 180,
+            borderRadius: 90,
+            backgroundColor: "#e0e0e0",
+          }}
+        />
+      )}
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          backgroundColor: "#202020",
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          alignItems: "center",
+          justifyContent: "center",
+          borderWidth: 3,
+          borderColor: "white",
+        }}
+      >
+        <FontAwesomeIcon icon="pencil" size={15} color="#d0d0d0" />
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 function ProfileLogout() {
   const logout = useGlobal((state) => state.logout);
@@ -48,15 +123,7 @@ function ProfileScreen() {
         paddingTop: 100,
       }}
     >
-      <Image
-        source={require("../assets/Profile.webp")}
-        style={{
-          width: 180,
-          height: 180,
-          borderRadius: 90,
-          backgroundColor: "#e0e0e0",
-        }}
-      />
+      <ProfileImage />
 
       <Text
         style={{
