@@ -15,10 +15,6 @@ import api from "../core/api";
 import utils from "../core/utils";
 import useGlobal from "../core/global";
 
-
-
-
-
 const SignInScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -26,9 +22,7 @@ const SignInScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-
-  const login = useGlobal(state => state.login)
-
+  const login = useGlobal((state) => state.login);
 
   function onSignIn(username, password) {
     console.log(username, password);
@@ -59,7 +53,12 @@ const SignInScreen = ({ navigation }) => {
     })
       .then((response) => {
         utils.log("Sign In:", response.data);
-        login(response.data)
+
+        const credintials = {
+          username: username,
+          password: password,
+        };
+        login(credintials, response.data.user);
       })
       .catch((error) => {
         if (error.response) {

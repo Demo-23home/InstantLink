@@ -4,8 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import useGlobal from "../core/global";
 
 function ProfileLogout() {
-
-  const logout = useGlobal(state => state.logout)
+  const logout = useGlobal((state) => state.logout);
 
   return (
     <TouchableOpacity
@@ -15,24 +14,23 @@ function ProfileLogout() {
         height: 52,
         borderRadius: 26,
         alignItems: "center",
-        paddingHorizontal:26,
-        backgroundColor:'#202020',
-        marginTop:40
+        justifyContent: "center",
+        paddingHorizontal: 26,
+        backgroundColor: "#202020",
+        marginTop: 40,
       }}
     >
       <FontAwesomeIcon
-      icon = 'right-from-bracket'
-      size = {20}
-      color= {'#d0d0d0'}
-      style={{marginRight:12 }}
-      >
-
-      </FontAwesomeIcon>
+        icon="right-from-bracket"
+        size={20}
+        color="#d0d0d0"
+        style={{ marginRight: 12 }}
+      />
       <Text
-      style={{
-        fontWeight:'bold',
-        color:'#d0d0d0'
-      }}
+        style={{
+          fontWeight: "bold",
+          color: "#d0d0d0",
+        }}
       >
         Logout
       </Text>
@@ -40,7 +38,8 @@ function ProfileLogout() {
   );
 }
 
-const ProfileScreen = () => {
+function ProfileScreen() {
+  const user = useGlobal((state) => state.user);
   return (
     <View
       style={{
@@ -65,12 +64,11 @@ const ProfileScreen = () => {
           color: "#303030",
           fontSize: 20,
           fontWeight: "bold",
-          marginTop: 6,
+          marginBottom: 6,
         }}
       >
-        Demo Home
+        {user.name}
       </Text>
-
       <Text
         style={{
           textAlign: "center",
@@ -78,11 +76,12 @@ const ProfileScreen = () => {
           fontSize: 14,
         }}
       >
-        @demo_23home
+        @{user.username}
       </Text>
+
       <ProfileLogout />
     </View>
   );
-};
+}
 
 export default ProfileScreen;

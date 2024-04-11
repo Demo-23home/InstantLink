@@ -13,8 +13,6 @@ import Button from "../common/Button";
 import api from "../core/api";
 import useGlobal from "../core/global";
 
-
-
 const SignUpScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -28,9 +26,7 @@ const SignUpScreen = ({ navigation }) => {
   const [password1Error, setPassword1Error] = useState("");
   const [password2Error, setPassword2Error] = useState("");
 
-
-  const login = useGlobal(state => state.login)
-
+  const login = useGlobal((state) => state.login);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -87,28 +83,33 @@ const SignUpScreen = ({ navigation }) => {
         last_name: lastName,
         password: password1,
       },
-    }).then((response) => {
-      utils.log("Sign Un:", response.data);
-      login(response.data)
     })
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", error.message);
-      }
-      console.log(error.config);
-    });
+      .then((response) => {
+        utils.log("Sign Un:", response.data);
+        const credintials = {
+          username: username,
+          password: password1,
+        };
+        login(credintials ,response.data.user);
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+        console.log(error.config);
+      });
   }
 
   return (

@@ -20,17 +20,17 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "web": {
-    },
-    
+    "web": {},
     "plugins": [
       [
         "expo-font",
         {
-          "fonts": ["./src/assets/fonts/LeckerliOne-Regular.ttf"]
+          "fonts": [
+            "./src/assets/fonts/LeckerliOne-Regular.ttf"
+          ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
-
   }
 }
