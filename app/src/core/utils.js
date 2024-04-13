@@ -13,4 +13,6 @@ function log() {
 		console.log(`[${Platform.OS}]`, arg)
 	}
 }
-export default { log };
+
+
+export default { log, };

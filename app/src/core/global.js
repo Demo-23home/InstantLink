@@ -85,8 +85,26 @@ const useGlobal = create((set, get) => ({
       utils.log("socket.onopen");
     };
 
-    socket.onmessage = () => {
+    socket.onmessage = (event) => {
       utils.log("socket.onmessage");
+      const parsed = JSON.parse(event.data)
+
+      // Debug log formatted data
+      utils.log('onmessage', parsed)
+
+      const responses = {
+        'thumbnail': responseThumbnail
+      }
+      
+      const resp = responses[parsed.source]
+      if (!resp){
+        utils.log('parsed.source "'+parsed.source+'" not found')
+        return
+      }
+
+      // Call Response funcion
+      resp(set, get, parsed.data)
+
     };
     socket.onerror = (e) => {
       utils.log("socket.onerror", e.message);
@@ -103,6 +121,26 @@ const useGlobal = create((set, get) => ({
   },
 
   socketClose: () => {},
+
+  //---------------------
+  //     Thumbnail
+  //---------------------
+
+  uploadThumbnail: (file) => {
+    const socket = get().socket;
+    // socket.send(
+    //   JSON.stringify({source:"thumbnail",filename: file.name})
+    // // filename: file.fileName,
+    // );
+    
+    socket.send(
+      JSON.stringify({
+        source: "thumbnail",
+        base64: file.base64,
+        filename: file.name,
+      })
+    );
+  },
 }));
 
 export default useGlobal;

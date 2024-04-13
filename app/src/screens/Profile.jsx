@@ -1,62 +1,42 @@
 import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { launchImageLibraryAsync } from "expo-image-picker"; // Import from expo-image-picker
 import useGlobal from "../core/global";
 import utils from "../core/utils";
-import { useState } from "react";
-import * as ImagePicker from "expo-image-picker"; // Correct import
+// import Thumbnail from "../common/Thumbnail";
 
 function ProfileImage() {
-  const [image, setImage] = useState(null);
+  const uploadThumbnail = useGlobal((state) => state.uploadThumbnail);
+  const user = useGlobal((state) => state.user);
 
-  const openImagePicker = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-      base64: true, // Include base64 representation
-    });
-
-    if (!result.canceled) {
-      setImage(result.uri);
-      utils.log("Image Picker Result:", result);
-      // Use result.base64 for the base64 representation
-    } else {
-      utils.log("Image picker cancelled");
+  const pickImage = async () => {
+    try {
+      const result = await launchImageLibraryAsync({
+        mediaTypes: "Images",
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+        base64: true,
+      });
+      if (!result.canceled) {
+        const file = {
+          name: `thumbnail_${Date.now()}.jpg`,
+          base64: result.assets[0].base64,         
+          // uri: result.uri,
+          // type: result.type,
+        };
+        uploadThumbnail(file);
+        // utils.log(result.assets[0]);
+      }
+    } catch (error) {
+      console.log("Error picking image:", error);
     }
   };
 
   return (
-    <TouchableOpacity style={{ marginBottom: 20 }} onPress={openImagePicker}>
-      {image ? (
-        <Image
-          source={{ uri: image }}
-          style={{
-            width: 180,
-            height: 180,
-            borderRadius: 90,
-            backgroundColor: "#e0e0e0",
-          }}
-        />
-      ) : (
-        <Image
-          source={require("../assets/Profile.webp")}
-          style={{
-            width: 180,
-            height: 180,
-            borderRadius: 90,
-            backgroundColor: "#e0e0e0",
-          }}
-        />
-      )}
+    <TouchableOpacity style={{ marginBottom: 20 }} onPress={pickImage}>
+      {/* <Thumbnail url={user.thumbnail} size={180} /> */}
       <View
         style={{
           position: "absolute",
