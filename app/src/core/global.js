@@ -3,6 +3,16 @@ import secure from "./secure";
 import api, { ADDRESS } from "./api";
 import utils from "./utils";
 
+//-------------------------------------
+//     Socket receive message handlers
+//-------------------------------------
+
+function responseThumbnail(set, get, data) {
+	set((state) => ({
+		user: data
+	}))
+}
+
 const useGlobal = create((set, get) => ({
   //---------------------
   //   Initialization
@@ -86,24 +96,23 @@ const useGlobal = create((set, get) => ({
     };
 
     socket.onmessage = (event) => {
-      utils.log("socket.onmessage");
-      const parsed = JSON.parse(event.data)
+      // Convert data to javascript object
+      const parsed = JSON.parse(event.data);
 
       // Debug log formatted data
-      utils.log('onmessage', parsed)
+      utils.log("onmessage", parsed);
 
       const responses = {
-        'thumbnail': responseThumbnail
-      }
-      
-      const resp = responses[parsed.source]
-      if (!resp){
-        utils.log('parsed.source "'+parsed.source+'" not found')
-        return
-      }
+        thumbnail: responseThumbnail,
+      };
 
-      // Call Response funcion
-      resp(set, get, parsed.data)
+      const resp = responses[parsed.source];
+      if (!resp) {
+        utils.log('parsed.source "' + parsed.source + '" not found');
+        return;
+      }
+      // Call response function
+      resp(set, get, parsed.data);
 
     };
     socket.onerror = (e) => {
@@ -132,7 +141,7 @@ const useGlobal = create((set, get) => ({
     //   JSON.stringify({source:"thumbnail",filename: file.name})
     // // filename: file.fileName,
     // );
-    
+
     socket.send(
       JSON.stringify({
         source: "thumbnail",

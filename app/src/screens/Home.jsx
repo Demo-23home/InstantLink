@@ -7,6 +7,8 @@ import { useLayoutEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { TouchableOpacity, View, Image } from "react-native";
 import useGlobal from "../core/global";
+import Thumbnail from "../common/Thumbnail";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +21,7 @@ const HomeScreen = ({ navigation }) => {
 
   const socketConnect = useGlobal(state => state.socketConnect)
   const socketClose = useGlobal(state => state.socketClose)
-  
+  const user = useGlobal(state => state.user)  
   useEffect(()=> {
     socketConnect()
     return () =>{
@@ -33,15 +35,10 @@ const HomeScreen = ({ navigation }) => {
       screenOptions={({ route, navigation }) => ({
         headerLeft: () => (
           <View style={{ marginLeft: 12, marginTop: 4 }}>
-            <Image
-              source={require("../assets/Profile.webp")}
-              style={{
-                width: 35,
-                height: 35,
-                borderRadius: 14,
-                backgroundColor: "#e0e0e0",
-              }}
-            />
+          <Thumbnail
+            url={user.thumbnail}
+            size = {30}
+          />
           </View>
         ),
 

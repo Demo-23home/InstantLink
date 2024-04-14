@@ -30,59 +30,60 @@ class ChatConsumer(WebsocketConsumer):
         )
 
     # -----------------------------
-    # Handle Requests
+    #       Handle Requests
     # -----------------------------
     def receive(self, text_data):
-        # Receive data
+        # Receive message from websocket
         data = json.loads(text_data)
-        data_source = data.get("source")
-        print(data_source)
-        # print(data.get('base64'))
-        # print('receive:', data)
-        if data_source == "thumbnail":
-            self.receive_thumbnail(data)
+        data_source = data.get('source')
+		
+        # Pretty print  python dict
+        print('receive', json.dumps(data, indent=2))
 
+		# Thumbnail upload
+        if data_source == 'thumbnail':
+            self.receive_thumbnail(data)
+	
     def receive_thumbnail(self, data):
-        user = self.scope["user"]
-        # convert the base64 to django content file
-        image_str = data.get("base64")
+        user = self.scope['user']
+        # Convert base64 data  to django content file
+        image_str = data.get('base64')
         image = ContentFile(base64.b64decode(image_str))
-        # Update the thumbnail Feild in the User Model
-        filename = data.get("filename")
+        # Update thumbnail field
+        filename = data.get('filename')
         user.thumbnail.save(filename, image, save=True)
-        # Serialize User
+        # Serialize user
         serialized = UserSerializer(user)
-        # Send Updated User Data including Thumbnail
-        self.send_group(self.username, "thumbnail", serialized.data)
+        # Send updated user data including new thumbnail 
+        self.send_group(self.username, 'thumbnail', serialized.data)
 
     # -----------------------------------------
     # Catch all boradcasts to a client helpers
     # -----------------------------------------
 
-    def send_group(self, source, group, data):
-        response = {"type": "broadcast_group ", "data": data, "source": source}
-
+    def send_group(self, group, source, data):
+        response = {
+			'type': 'broadcast_group',
+			'source': source,
+			'data': data
+		}
         async_to_sync(self.channel_layer.group_send)(
-            group, response
-        )
+			group, response
+		)
 
     
 
     def broadcast_group(self, data):
         '''
         data:
-            type: 'broadcast_group'
-            source: where it has been orginated
-            data: whatever you want to send
+            - type: 'broadcast_group'
+            - source: where it originated from
+            - data: what ever you want to send as a dict
         '''
-
         data.pop('type')
-
         '''
-        data:
-            source: where it has been orginated
-            data: whatever you want to send
+        return data:
+            - source: where it originated from
+            - data: what ever you want to send as a dict
         '''
-
-
-        self.send(text_data=data)
+        self.send(text_data=json.dumps(data))

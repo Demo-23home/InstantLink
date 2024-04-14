@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { launchImageLibraryAsync } from "expo-image-picker"; // Import from expo-image-picker
 import useGlobal from "../core/global";
 import utils from "../core/utils";
-// import Thumbnail from "../common/Thumbnail";
+import Thumbnail from "../common/Thumbnail";
 
 function ProfileImage() {
   const uploadThumbnail = useGlobal((state) => state.uploadThumbnail);
@@ -22,7 +22,7 @@ function ProfileImage() {
       if (!result.canceled) {
         const file = {
           name: `thumbnail_${Date.now()}.jpg`,
-          base64: result.assets[0].base64,         
+          base64: result.assets[0].base64,
           // uri: result.uri,
           // type: result.type,
         };
@@ -36,7 +36,7 @@ function ProfileImage() {
 
   return (
     <TouchableOpacity style={{ marginBottom: 20 }} onPress={pickImage}>
-      {/* <Thumbnail url={user.thumbnail} size={180} /> */}
+      <Thumbnail url={user.thumbnail} size={180} />
       <View
         style={{
           position: "absolute",
