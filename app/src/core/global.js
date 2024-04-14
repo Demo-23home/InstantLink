@@ -8,10 +8,19 @@ import utils from "./utils";
 //-------------------------------------
 
 function responseThumbnail(set, get, data) {
-	set((state) => ({
-		user: data
-	}))
+  set((state) => ({
+    user: data,
+  }));
 }
+
+
+
+function responseSearch(set, get, data) {
+  set((state) => ({
+    searchList: data,
+  }));
+}
+
 
 const useGlobal = create((set, get) => ({
   //---------------------
@@ -104,6 +113,7 @@ const useGlobal = create((set, get) => ({
 
       const responses = {
         thumbnail: responseThumbnail,
+        search: responseSearch,
       };
 
       const resp = responses[parsed.source];
@@ -113,7 +123,6 @@ const useGlobal = create((set, get) => ({
       }
       // Call response function
       resp(set, get, parsed.data);
-
     };
     socket.onerror = (e) => {
       utils.log("socket.onerror", e.message);
@@ -130,15 +139,36 @@ const useGlobal = create((set, get) => ({
   },
 
   socketClose: () => {
-    const socket = get().socket
+    const socket = get().socket;
     if (socket) {
       socket.close();
     }
-    set(state => ({
-      state:null,
-    }))
+    set((state) => ({
+      state: null,
+    }));
   },
 
+  //---------------------
+  //   Search
+  //---------------------
+
+  searchList: null,
+
+  searchUsers: (query) => {
+    if (query) {
+      const socket = get().socket;
+      socket.send(
+        JSON.stringify({
+          source: "search",
+          query: query,
+        })
+      );
+    } else {
+      set((state) => ({
+        searchList: null,
+      }));
+    }
+  },
   //---------------------
   //     Thumbnail
   //---------------------

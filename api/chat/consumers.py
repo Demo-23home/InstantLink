@@ -3,7 +3,9 @@ import base64
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from django.core.files.base import ContentFile
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, SearchSerializer
+from accounts.models import User
+from django.db.models import Q
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -35,55 +37,72 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         # Receive message from websocket
         data = json.loads(text_data)
-        data_source = data.get('source')
-		
-        # Pretty print  python dict
-        print('receive', json.dumps(data, indent=2))
+        data_source = data.get("source")
 
-		# Thumbnail upload
-        if data_source == 'thumbnail':
+        # Pretty print  python dict
+        print("receive", json.dumps(data, indent=2))
+
+        # Thumbnail upload
+        if data_source == "thumbnail":
             self.receive_thumbnail(data)
-	
+
+        if data_source == "search":
+            self.receive_search(data)
+
+    def receive_search(self, data):
+        query = data.get("query")
+        # Get users from query search term
+        users = User.objects.filter(
+            Q(username__istartswith=query)
+            | Q(first_name__istartswith=query)
+            | Q(last_name__istartswith=query)
+        ).exclude(
+            username=self.username
+            )
+        # .annotate(
+        #         pending_them = ...
+        #         pending_me = ...
+        #         connected = ...
+        #     )
+
+        # Serialize the result
+
+        serialized = SearchSerializer(users, many=True)
+        # Send search results back to the user
+        self.send_group(self.username, 'search', serialized.data)
+
     def receive_thumbnail(self, data):
-        user = self.scope['user']
+        user = self.scope["user"]
         # Convert base64 data  to django content file
-        image_str = data.get('base64')
+        image_str = data.get("base64")
         image = ContentFile(base64.b64decode(image_str))
         # Update thumbnail field
-        filename = data.get('filename')
+        filename = data.get("filename")
         user.thumbnail.save(filename, image, save=True)
         # Serialize user
         serialized = UserSerializer(user)
-        # Send updated user data including new thumbnail 
-        self.send_group(self.username, 'thumbnail', serialized.data)
+        # Send updated user data including new thumbnail
+        self.send_group(self.username, "thumbnail", serialized.data)
 
     # -----------------------------------------
     # Catch all boradcasts to a client helpers
     # -----------------------------------------
 
     def send_group(self, group, source, data):
-        response = {
-			'type': 'broadcast_group',
-			'source': source,
-			'data': data
-		}
-        async_to_sync(self.channel_layer.group_send)(
-			group, response
-		)
-
-    
+        response = {"type": "broadcast_group", "source": source, "data": data}
+        async_to_sync(self.channel_layer.group_send)(group, response)
 
     def broadcast_group(self, data):
-        '''
+        """
         data:
             - type: 'broadcast_group'
             - source: where it originated from
             - data: what ever you want to send as a dict
-        '''
-        data.pop('type')
-        '''
+        """
+        data.pop("type")
+        """
         return data:
             - source: where it originated from
             - data: what ever you want to send as a dict
-        '''
+        """
         self.send(text_data=json.dumps(data))

@@ -1,8 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, TextInput, View, Text, TouchableOpacity } from "react-native";
 import Empty from "../common/Empty";
 import Thumbnail from "../common/Thumbnail";
+import useGlobal from "../core/global";
 
 function SearchButton({ user }) {
   // Add tick if the user is already connected
@@ -81,7 +82,7 @@ function SearchRow({ user }) {
         height: 106,
       }}
     >
-      <Thumbnail path={user.thumbnail} size={76} />
+      <Thumbnail url={user.thumbnail} size={76} />
       <View
         style={{
           flex: 1,
@@ -112,7 +113,18 @@ function SearchRow({ user }) {
 
 const SearchScreen = () => {
   const [query, setQuery] = useState("");
-  const searchList = [
+  searchList = useGlobal(state => state.searchList)
+  searchUsers = useGlobal(state => state.searchUsers)
+
+
+
+  useEffect(()=> {
+    searchUsers(query)
+  }, [query])
+
+
+
+  /*const searchList = [
     {
       thumbnail: null,
       name: "Silly Name",
@@ -137,7 +149,8 @@ const SearchScreen = () => {
       username: "sillynb",
       status: "no-connection",
     },
-  ];
+  ];*/
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View
