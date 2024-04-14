@@ -58,7 +58,7 @@ const SignInScreen = ({ navigation }) => {
           username: username,
           password: password,
         };
-        login(credintials, response.data.user);
+        login(credintials, response.data.user, response.data.tokens);
       })
       .catch((error) => {
         if (error.response) {

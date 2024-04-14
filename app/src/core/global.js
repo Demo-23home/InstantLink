@@ -129,7 +129,15 @@ const useGlobal = create((set, get) => ({
     utils.log("TOKENS:", tokens);
   },
 
-  socketClose: () => {},
+  socketClose: () => {
+    const socket = get().socket
+    if (socket) {
+      socket.close();
+    }
+    set(state => ({
+      state:null,
+    }))
+  },
 
   //---------------------
   //     Thumbnail

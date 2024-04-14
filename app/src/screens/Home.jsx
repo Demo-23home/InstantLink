@@ -5,7 +5,7 @@ import FriendsScreen from "./Friends";
 import ProfileScreen from "./Profile";
 import { useLayoutEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import useGlobal from "../core/global";
 import Thumbnail from "../common/Thumbnail";
 
@@ -30,6 +30,11 @@ const HomeScreen = ({ navigation }) => {
   }, [])
 
 
+  function onSearch () {
+    navigation.navigate('Search')
+  }
+
+
   return (
     <Tab.Navigator
       screenOptions={({ route, navigation }) => ({
@@ -43,7 +48,9 @@ const HomeScreen = ({ navigation }) => {
         ),
 
         headerRight: () => (
-          <TouchableOpacity>
+          <TouchableOpacity
+          onPress={onSearch}
+          >
             <FontAwesomeIcon
               style={{ marginRight: 16 }}
               icon="magnifying-glass"
