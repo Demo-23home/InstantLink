@@ -20,13 +20,16 @@ function SearchButton({ user }) {
     );
   }
 
+  const requestConnect = useGlobal(state => state.requestConnect)
+
+
   const data = {};
 
   switch (user.status) {
     case "no-connection":
       data.text = "Connect";
       data.disabled = false;
-      data.onPress = () => {};
+      data.onPress = () => requestConnect(user.username);
       break;
     case "pending-them":
       data.text = "Pending";

@@ -7,20 +7,38 @@ import utils from "./utils";
 //     Socket receive message handlers
 //-------------------------------------
 
+function responseRequestConnect(set, get, connection) {
+  const user = get().user;
+  // If i was the one that made the connect request,
+  // update the search list row
+  if (user.username === connection.sender.username) {
+    const searchList = [...get().searchList];
+    const searchIndex = searchList.findIndex(
+      (request) => request.username === connection.receiver.username
+    );
+    if (searchIndex >= 0) {
+      searchList[searchIndex].status = "pending-them";
+      set((state) => ({
+        searchList: searchList,
+      }));
+    }
+    // If they were the one  that sent the connect
+    // request, add request to request list
+  } else {
+  }
+}
+
 function responseThumbnail(set, get, data) {
   set((state) => ({
     user: data,
   }));
 }
 
-
-
 function responseSearch(set, get, data) {
   set((state) => ({
     searchList: data,
   }));
 }
-
 
 const useGlobal = create((set, get) => ({
   //---------------------
@@ -112,6 +130,7 @@ const useGlobal = create((set, get) => ({
       utils.log("onmessage", parsed);
 
       const responses = {
+        "request.connect": responseRequestConnect,
         thumbnail: responseThumbnail,
         search: responseSearch,
       };
@@ -185,6 +204,22 @@ const useGlobal = create((set, get) => ({
         source: "thumbnail",
         base64: file.base64,
         filename: file.name,
+      })
+    );
+  },
+
+  //---------------------
+  //     Requests
+  //---------------------
+
+  requestsList: null,
+
+  requestConnect: (username) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: "request.connect",
+        username: username,
       })
     );
   },

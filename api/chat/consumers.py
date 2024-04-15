@@ -3,8 +3,8 @@ import base64
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from django.core.files.base import ContentFile
-from accounts.serializers import UserSerializer, SearchSerializer
-from accounts.models import User
+from accounts.serializers import UserSerializer, SearchSerializer, RequestSerializer
+from accounts.models import User, Connection
 from django.db.models import Q
 
 
@@ -34,6 +34,7 @@ class ChatConsumer(WebsocketConsumer):
     # -----------------------------
     #       Handle Requests
     # -----------------------------
+
     def receive(self, text_data):
         # Receive message from websocket
         data = json.loads(text_data)
@@ -46,8 +47,36 @@ class ChatConsumer(WebsocketConsumer):
         if data_source == "thumbnail":
             self.receive_thumbnail(data)
 
-        if data_source == "search":
+        # Search/Filter Users
+        elif data_source == "search":
             self.receive_search(data)
+
+        # Make a friend request
+        elif data_source == "request.connect":
+            self.receive_request_connect(data)
+
+    def receive_request_connect(self, data):
+        username = data.get("username")
+        # Attemp to fetch the receiving user
+        try:
+            receiver = User.objects.get(username=username)
+        except User.DoesNotExist:
+            print("Error: User Not Found")
+            return
+        # Create connection
+        connection, _ = Connection.objects.get_or_create(
+            sender=self.scope["user"], receiver=receiver
+        )
+
+        serialized = RequestSerializer(connection)
+
+        # Send to the sender
+        self.send_group(connection.sender.username, "request.connect", serialized.data)
+
+        # Send to recevier
+        self.send_group(
+            connection.receiver.username, "request.connect", serialized.data
+        )
 
     def receive_search(self, data):
         query = data.get("query")
@@ -56,9 +85,7 @@ class ChatConsumer(WebsocketConsumer):
             Q(username__istartswith=query)
             | Q(first_name__istartswith=query)
             | Q(last_name__istartswith=query)
-        ).exclude(
-            username=self.username
-            )
+        ).exclude(username=self.username)
         # .annotate(
         #         pending_them = ...
         #         pending_me = ...
@@ -69,7 +96,7 @@ class ChatConsumer(WebsocketConsumer):
 
         serialized = SearchSerializer(users, many=True)
         # Send search results back to the user
-        self.send_group(self.username, 'search', serialized.data)
+        self.send_group(self.username, "search", serialized.data)
 
     def receive_thumbnail(self, data):
         user = self.scope["user"]
