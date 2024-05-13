@@ -11,25 +11,27 @@ from django.db.models import Q ,Exists, OuterRef
 class ChatConsumer(WebsocketConsumer):
 
     def connect(self):
-        user = self.scope["user"]
-        print(user)
-        print(user.is_authenticated)
+        user = self.scope['user']
+        print(user, user.is_authenticated)
+        
+        if not user.is_authenticated:
+            return
+        
         # Save username to be used as a group name for this user
         self.username = user.username
 
         # join this user to a group with their username
-        async_to_sync(self.channel_layer.group_add)(self.username, self.channel_name)
-
-        if not user.is_authenticated:
-            return
-
+        async_to_sync(self.channel_layer.group_add)(
+			self.username, self.channel_name
+		)
         self.accept()
 
+
     def disconnect(self, close_code):
-        # Leave room/group
+		# Leave room/group
         async_to_sync(self.channel_layer.group_discard)(
-            self.username, self.channel_name
-        )
+			self.username, self.channel_name
+		)
 
     # -----------------------------
     #       Handle Requests
@@ -43,21 +45,22 @@ class ChatConsumer(WebsocketConsumer):
         # Pretty print  python dict
         print("receive", json.dumps(data, indent=2))
 
-        # Make a friend request
-        if data_source == "request.connect":
+		# Make friend request
+        if data_source == 'request.connect':
             self.receive_request_connect(data)
 
-        # Get Request List
-        if data_source == "request.list":
+		# Get request list
+        elif data_source == 'request.list':
             self.receive_request_list(data)
 
-        # Search/Filter Users
-        elif data_source == "search":
+		# Search / filter users
+        elif data_source == 'search':
             self.receive_search(data)
 
-        # Thumbnail upload
-        elif data_source == "thumbnail":
+		# Thumbnail upload
+        elif data_source == 'thumbnail':
             self.receive_thumbnail(data)
+            
 
     def receive_request_connect(self, data):
         username = data.get("username")
@@ -149,25 +152,28 @@ class ChatConsumer(WebsocketConsumer):
         # Send updated user data including new thumbnail
         self.send_group(self.username, "thumbnail", serialized.data)
 
-    # -----------------------------------------
-    # Catch all boradcasts to a client helpers
-    # -----------------------------------------
-
     def send_group(self, group, source, data):
-        response = {"type": "broadcast_group", "source": source, "data": data}
-        async_to_sync(self.channel_layer.group_send)(group, response)
+        response = {
+			'type': 'broadcast_group',
+			'source': source,
+			'data': data
+		}
+        async_to_sync(self.channel_layer.group_send)(
+			group, response
+		)
 
     def broadcast_group(self, data):
-        """
-        data:
-            - type: 'broadcast_group'
-            - source: where it originated from
-            - data: what ever you want to send as a dict
-        """
-        data.pop("type")
-        """
-        return data:
-            - source: where it originated from
-            - data: what ever you want to send as a dict
-        """
+        '''
+		data:
+			- type: 'broadcast_group'
+			- source: where it originated from
+			- data: what ever you want to send as a dict
+		'''
+        data.pop('type')
+        '''
+		return data:
+			- source: where it originated from
+			- data: what ever you want to send as a dict
+		'''
         self.send(text_data=json.dumps(data))
+		
