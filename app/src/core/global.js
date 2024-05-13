@@ -28,6 +28,17 @@ function responseRequestConnect(set, get, connection) {
   }
 }
 
+
+
+function responseRequestList(set, get, requestList){
+  set((state) => ({
+    requestList:requestList
+  }))
+}
+
+
+
+
 function responseThumbnail(set, get, data) {
   set((state) => ({
     user: data,
@@ -120,6 +131,10 @@ const useGlobal = create((set, get) => ({
     const socket = new WebSocket(url);
     socket.onopen = () => {
       utils.log("socket.onopen");
+     
+      socket.send(JSON.stringify({
+        source:"request.list"
+      }))
     };
 
     socket.onmessage = (event) => {
@@ -131,6 +146,7 @@ const useGlobal = create((set, get) => ({
 
       const responses = {
         "request.connect": responseRequestConnect,
+        "request.list": responseRequestList,
         thumbnail: responseThumbnail,
         search: responseSearch,
       };
@@ -212,7 +228,7 @@ const useGlobal = create((set, get) => ({
   //     Requests
   //---------------------
 
-  requestsList: null,
+  requestList: null,
 
   requestConnect: (username) => {
     const socket = get().socket;

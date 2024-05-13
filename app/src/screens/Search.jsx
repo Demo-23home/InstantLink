@@ -1,9 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import React, { useEffect, useState } from "react";
-import { FlatList, SafeAreaView, TextInput, View, Text, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  TextInput,
+  View,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import Empty from "../common/Empty";
 import Thumbnail from "../common/Thumbnail";
 import useGlobal from "../core/global";
+import Cell from "../common/Cell";
 
 function SearchButton({ user }) {
   // Add tick if the user is already connected
@@ -20,8 +28,7 @@ function SearchButton({ user }) {
     );
   }
 
-  const requestConnect = useGlobal(state => state.requestConnect)
-
+  const requestConnect = useGlobal((state) => state.requestConnect);
 
   const data = {};
 
@@ -48,43 +55,32 @@ function SearchButton({ user }) {
 
   return (
     <TouchableOpacity
-    style={{
-      backgroundColor: data.disabled ? '#505055' : '#202020',
-      paddingHorizontal: 14,
-      height:36,
-      alignItems:'center',
-      justifyContent:'center',
-      borderRadius:18
-    }}
-    disabled = {data.disabled}
-    onPress={data.onPress}
+      style={{
+        backgroundColor: data.disabled ? "#505055" : "#202020",
+        paddingHorizontal: 14,
+        height: 36,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 18,
+      }}
+      disabled={data.disabled}
+      onPress={data.onPress}
     >
-    <Text
-    style={{
-      color: data.disabled ? "#808080" : 'white',
-      fontWeight:'bold'
-    }}
-    >
-    {data.text}
-    </Text>
-
+      <Text
+        style={{
+          color: data.disabled ? "#808080" : "white",
+          fontWeight: "bold",
+        }}
+      >
+        {data.text}
+      </Text>
     </TouchableOpacity>
-  )
-
+  );
 }
 
 function SearchRow({ user }) {
   return (
-    <View
-      style={{
-        paddingHorizontal: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        borderBottomWidth: 1,
-        borderColor: "#f0f0f0",
-        height: 106,
-      }}
-    >
+    <Cell>
       <Thumbnail url={user.thumbnail} size={76} />
       <View
         style={{
@@ -110,22 +106,18 @@ function SearchRow({ user }) {
         </Text>
       </View>
       <SearchButton user={user} />
-    </View>
+    </Cell>
   );
 }
 
 const SearchScreen = () => {
   const [query, setQuery] = useState("");
-  searchList = useGlobal(state => state.searchList)
-  searchUsers = useGlobal(state => state.searchUsers)
+  searchList = useGlobal((state) => state.searchList);
+  searchUsers = useGlobal((state) => state.searchUsers);
 
-
-
-  useEffect(()=> {
-    searchUsers(query)
-  }, [query])
-
-
+  useEffect(() => {
+    searchUsers(query);
+  }, [query]);
 
   /*const searchList = [
     {

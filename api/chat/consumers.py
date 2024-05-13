@@ -43,17 +43,21 @@ class ChatConsumer(WebsocketConsumer):
         # Pretty print  python dict
         print("receive", json.dumps(data, indent=2))
 
-        # Thumbnail upload
-        if data_source == "thumbnail":
-            self.receive_thumbnail(data)
+        # Make a friend request
+        if data_source == "request.connect":
+            self.receive_request_connect(data)
+
+        # Get Request List
+        if data_source == "request.list":
+            self.receive_request_list(data)
 
         # Search/Filter Users
         elif data_source == "search":
             self.receive_search(data)
 
-        # Make a friend request
-        elif data_source == "request.connect":
-            self.receive_request_connect(data)
+        # Thumbnail upload
+        elif data_source == "thumbnail":
+            self.receive_thumbnail(data)
 
     def receive_request_connect(self, data):
         username = data.get("username")
@@ -97,6 +101,21 @@ class ChatConsumer(WebsocketConsumer):
         serialized = SearchSerializer(users, many=True)
         # Send search results back to the user
         self.send_group(self.username, "search", serialized.data)
+
+
+
+    def receive_request_list(self, data):
+        user = self.scope['user']
+        # get connections made to this user
+        connections = Connection.objects.filter(
+            receiver = user, 
+            accepted = False
+        )
+        serilaized = RequestSerializer(connections, many=True)
+        self.send_group(user.username, "request.list", serilaized.data)
+
+
+
 
     def receive_thumbnail(self, data):
         user = self.scope["user"]
