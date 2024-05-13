@@ -25,19 +25,24 @@ function responseRequestConnect(set, get, connection) {
     // If they were the one  that sent the connect
     // request, add request to request list
   } else {
+    const requestList = [...get().requestList];
+    const requestIndex = requestList.findIndex(
+      (request) => request.sender.username === connection.sender.username
+    );
+    if (requestIndex === -1) {
+      requestList.unshift(connection);
+      set((state) => ({
+        requestList: requestList,
+      }));
+    }
   }
 }
 
-
-
-function responseRequestList(set, get, requestList){
+function responseRequestList(set, get, requestList) {
   set((state) => ({
-    requestList:requestList
-  }))
+    requestList: requestList,
+  }));
 }
-
-
-
 
 function responseThumbnail(set, get, data) {
   set((state) => ({
@@ -131,24 +136,26 @@ const useGlobal = create((set, get) => ({
     const socket = new WebSocket(url);
     socket.onopen = () => {
       utils.log("socket.onopen");
-     
-      socket.send(JSON.stringify({
-        source:"request.list"
-      }))
+
+      socket.send(
+        JSON.stringify({
+          source: "request.list",
+        })
+      );
     };
 
     socket.onmessage = (event) => {
       // Convert data to javascript object
       const parsed = JSON.parse(event.data);
 
-      // Debug log formatted data
-      utils.log("onmessage", parsed);
+      // Debug log formatted  data
+      utils.log("onmessage:", parsed);
 
       const responses = {
         "request.connect": responseRequestConnect,
         "request.list": responseRequestList,
-        thumbnail: responseThumbnail,
         search: responseSearch,
+        thumbnail: responseThumbnail,
       };
 
       const resp = responses[parsed.source];
@@ -163,14 +170,11 @@ const useGlobal = create((set, get) => ({
       utils.log("socket.onerror", e.message);
     };
     socket.onclose = () => {
-      utils.log("socket.onclose ");
+      utils.log("socket.onclose");
     };
-
     set((state) => ({
       socket: socket,
     }));
-
-    utils.log("TOKENS:", tokens);
   },
 
   socketClose: () => {
@@ -179,7 +183,7 @@ const useGlobal = create((set, get) => ({
       socket.close();
     }
     set((state) => ({
-      state: null,
+      socket: null,
     }));
   },
 
@@ -204,17 +208,13 @@ const useGlobal = create((set, get) => ({
       }));
     }
   },
+
   //---------------------
   //     Thumbnail
   //---------------------
 
   uploadThumbnail: (file) => {
     const socket = get().socket;
-    // socket.send(
-    //   JSON.stringify({source:"thumbnail",filename: file.name})
-    // // filename: file.fileName,
-    // );
-
     socket.send(
       JSON.stringify({
         source: "thumbnail",
@@ -229,6 +229,16 @@ const useGlobal = create((set, get) => ({
   //---------------------
 
   requestList: null,
+
+  requestAccept: (username) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: "request.accept",
+        username: username,
+      })
+    );
+  },
 
   requestConnect: (username) => {
     const socket = get().socket;

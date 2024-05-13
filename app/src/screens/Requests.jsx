@@ -4,10 +4,31 @@ import useGlobal from "../core/global";
 import Empty from "../common/Empty";
 import Cell from "../common/Cell";
 import Thumbnail from "../common/Thumbnail";
+import { TouchableOpacity } from "react-native";
+
+function RequestAccept({ item }) {
+  const requestAccept = useGlobal((state) => state.requestAccept);
+
+  return (
+    <TouchableOpacity
+      style={{
+        backgroundColor: "#202020",
+        paddingHorizontal: 14,
+        height: 36,
+        borderRadius: 18,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onPress={() => requestAccept(item.sender.username)}
+    >
+      <Text style={{ color: "white", fontWeight: "bold" }}>Accept</Text>
+    </TouchableOpacity>
+  );
+}
 
 function ReqeustRow({ item }) {
-  const message = "Reqeusted to connect with you"
-  const time = "7m ago"
+  const message = "Reqeusted to connect with you";
+  const time = "7m ago";
   return (
     <Cell>
       <Thumbnail url={item.sender.Thumbnail} size={67} />
@@ -26,9 +47,11 @@ function ReqeustRow({ item }) {
             color: "#606060",
           }}
         >
-          {message} <Text style={{color:"#909090", fontSize:13}}>{time}</Text>
+          {message}{" "}
+          <Text style={{ color: "#909090", fontSize: 13 }}>{time}</Text>
         </Text>
       </View>
+      <RequestAccept item={item} />
     </Cell>
   );
 }

@@ -5,7 +5,7 @@ from asgiref.sync import async_to_sync
 from django.core.files.base import ContentFile
 from accounts.serializers import UserSerializer, SearchSerializer, RequestSerializer
 from accounts.models import User, Connection
-from django.db.models import Q
+from django.db.models import Q ,Exists, OuterRef
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -89,12 +89,31 @@ class ChatConsumer(WebsocketConsumer):
             Q(username__istartswith=query)
             | Q(first_name__istartswith=query)
             | Q(last_name__istartswith=query)
-        ).exclude(username=self.username)
-        # .annotate(
-        #         pending_them = ...
-        #         pending_me = ...
-        #         connected = ...
-        #     )
+        ).exclude(username=self.username
+        ).annotate(
+                pending_them = Exists(
+                    Connection.objects.filter(
+                        sender = self.scope["user"],
+                        receiver = OuterRef('id'),
+                        accepted = False
+                    )
+                    ),
+                    pending_me = Exists(
+                    Connection.objects.filter(
+                        sender = OuterRef('id'),
+                        receiver = self.scope["user"],
+                        accepted = False
+                    )
+                    ) ,
+                    connected = Exists(
+                    Connection.objects.filter(
+                        Q(sender=self.scope['user'], receiver=OuterRef('id')) |
+                        Q(receiver=self.scope['user'], sender=OuterRef('id')),
+                        accepted=True
+                    )
+                    )
+
+            )
 
         # Serialize the result
 
