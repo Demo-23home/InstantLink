@@ -3,7 +3,7 @@ import base64
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from django.core.files.base import ContentFile
-from accounts.serializers import UserSerializer, SearchSerializer, RequestSerializer
+from accounts.serializers import UserSerializer, SearchSerializer, RequestSerializer, FriendSerializer
 from accounts.models import User, Connection
 from django.db.models import Q ,Exists, OuterRef
 
@@ -45,12 +45,17 @@ class ChatConsumer(WebsocketConsumer):
         # Pretty print  python dict
         print("receive", json.dumps(data, indent=2))
 
+
+        # Get Friends List
+        if data_source == 'friend.list':
+            self.receive_friend_list(data)
+
 		# Accept Friedn Request
-        if data_source == 'request.accept':
+        elif data_source == 'request.accept':
             self.receive_request_accept(data)
         
         # Make friend request
-        if data_source == 'request.connect':
+        elif data_source == 'request.connect':
             self.receive_request_connect(data)
 
 		# Get request list
@@ -64,7 +69,21 @@ class ChatConsumer(WebsocketConsumer):
 		# Thumbnail upload
         elif data_source == 'thumbnail':
             self.receive_thumbnail(data)
-            
+
+
+    def receive_friend_list(self, data):
+        user = self.scope['user']
+        # Get the connections of the user
+        connections = Connection.objects.filter(
+            Q(sender=user) | Q(receiver=user),
+            accepted = True
+        )
+        
+        serialized = FriendSerializer(connections, context={ 'user':user }, many=True)
+        
+        # Send the data back to the user
+        self.send_group(user.username, "friend.list", serialized.data)
+
 
     def receive_request_accept(self, data):
         username = data.get("username")

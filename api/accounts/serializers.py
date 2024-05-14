@@ -64,3 +64,31 @@ class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Connection
         fields = ('sender', 'receiver', 'accepted', 'updated', 'created')
+
+
+
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    friend = serializers.SerializerMethodField()
+    preview = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Connection
+        fields = ['id', 'friend', 'preview', 'updated']
+    
+    def get_friend(self, obj):
+        # if Iam the sender
+        user = self.context['user']
+        if user == obj.sender:
+            return UserSerializer(obj.receiver).data
+        
+        # if Iam the receiver
+        elif user == obj.receiver:
+            return UserSerializer(obj.sender).data
+        
+        else:
+            print("Error, NO User found in FriendSerializer")
+
+    def get_preview(self, obj):
+        return "New Connection"

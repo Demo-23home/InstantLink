@@ -8,24 +8,26 @@ import { useReducer } from "react";
 //     Socket receive message handlers
 //-------------------------------------
 
+function responseFriendList(set, get, friendList) {
+  set((state) => ({
+    friendList:friendList
+  }))
+}
 
-
-
-
-function responseRequestAccept(set, get, connection){
-  const user = get().user
+function responseRequestAccept(set, get, connection) {
+  const user = get().user;
   // if i was the one who sent the request, remove
   // request from the request list
-  if (user.username === connection.receiver.username){
-    const requestList = [ ...get().requestList]
+  if (user.username === connection.receiver.username) {
+    const requestList = [...get().requestList];
     const requestIndex = requestList.findIndex(
-      request => request.id === connection.id
-    )
+      (request) => request.id === connection.id
+    );
     if (requestIndex >= 0) {
-      requestList.splice(requestIndex, 1)
+      requestList.splice(requestIndex, 1);
       set((state) => ({
-        requestList:requestList
-      }))
+        requestList: requestList,
+      }));
     }
   }
 
@@ -33,39 +35,33 @@ function responseRequestAccept(set, get, connection){
   // the searchList for the acceptor or the accepte
   // update the state of the searchList item
 
-  const sl = get().searchList
-  if (sl === null){
-    return
+  const sl = get().searchList;
+  if (sl === null) {
+    return;
   }
-  
-  const searchList = [ ...sl]
-  let searchIndex = -1
+
+  const searchList = [...sl];
+  let searchIndex = -1;
   // if this user is accepted
-  if (user.username === connection.receiver.username){
+  if (user.username === connection.receiver.username) {
     searchIndex = searchList.findIndex(
-      user => user.username === connection.sender.username
-    )
+      (user) => user.username === connection.sender.username
+    );
   }
   // if the other user is accepted
-  else{
+  else {
     searchIndex = searchList.findIndex(
-      user => user.username === connection.receiver.username
-    )
+      (user) => user.username === connection.receiver.username
+    );
   }
 
   if (searchIndex >= 0) {
-    searchList[searchIndex].status = "connected"
+    searchList[searchIndex].status = "connected";
     set((state) => ({
-      searchList:searchList
-    }))
+      searchList: searchList,
+    }));
   }
-
 }
-
-
-
-
-
 
 function responseRequestConnect(set, get, connection) {
   const user = get().user;
@@ -202,6 +198,12 @@ const useGlobal = create((set, get) => ({
           source: "request.list",
         })
       );
+
+      socket.send(
+        JSON.stringify({
+          source: "friend.list",
+        })
+      );
     };
 
     socket.onmessage = (event) => {
@@ -212,6 +214,7 @@ const useGlobal = create((set, get) => ({
       utils.log("onmessage:", parsed);
 
       const responses = {
+        "friend.list": responseFriendList,
         "request.accept": responseRequestAccept,
         "request.connect": responseRequestConnect,
         "request.list": responseRequestList,
@@ -284,6 +287,12 @@ const useGlobal = create((set, get) => ({
       })
     );
   },
+
+  //---------------------
+  //     Friends
+  //---------------------
+
+  friendList: null,
 
   //---------------------
   //     Requests
