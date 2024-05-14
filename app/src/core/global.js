@@ -2,10 +2,70 @@ import { create } from "zustand";
 import secure from "./secure";
 import api, { ADDRESS } from "./api";
 import utils from "./utils";
+import { useReducer } from "react";
 
 //-------------------------------------
 //     Socket receive message handlers
 //-------------------------------------
+
+
+
+
+
+function responseRequestAccept(set, get, connection){
+  const user = get().user
+  // if i was the one who sent the request, remove
+  // request from the request list
+  if (user.username === connection.receiver.username){
+    const requestList = [ ...get().requestList]
+    const requestIndex = requestList.findIndex(
+      request => request.id === connection.id
+    )
+    if (requestIndex >= 0) {
+      requestList.splice(requestIndex, 1)
+      set((state) => ({
+        requestList:requestList
+      }))
+    }
+  }
+
+  // if the corrsponding user is contained within
+  // the searchList for the acceptor or the accepte
+  // update the state of the searchList item
+
+  const sl = get().searchList
+  if (sl === null){
+    return
+  }
+  
+  const searchList = [ ...sl]
+  let searchIndex = -1
+  // if this user is accepted
+  if (user.username === connection.receiver.username){
+    searchIndex = searchList.findIndex(
+      user => user.username === connection.sender.username
+    )
+  }
+  // if the other user is accepted
+  else{
+    searchIndex = searchList.findIndex(
+      user => user.username === connection.receiver.username
+    )
+  }
+
+  if (searchIndex >= 0) {
+    searchList[searchIndex].status = "connected"
+    set((state) => ({
+      searchList:searchList
+    }))
+  }
+
+}
+
+
+
+
+
 
 function responseRequestConnect(set, get, connection) {
   const user = get().user;
@@ -152,6 +212,7 @@ const useGlobal = create((set, get) => ({
       utils.log("onmessage:", parsed);
 
       const responses = {
+        "request.accept": responseRequestAccept,
         "request.connect": responseRequestConnect,
         "request.list": responseRequestList,
         search: responseSearch,
