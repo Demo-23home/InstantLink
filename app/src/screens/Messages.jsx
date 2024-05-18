@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Keyboard,
   SafeAreaView,
@@ -6,11 +6,92 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  FlatList,
 } from "react-native";
 import { Text } from "react-native";
 import Thumbnail from "../common/Thumbnail";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import useGlobal from "../core/global";
+
+function MessageBubbleMe({ text }) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        padding: 4,
+      }}
+    >
+      <View style={{ flex: 1 }} />
+
+      <View
+        style={{
+          backgroundColor: "#303040",
+          borderRadius: 21,
+          maxWidth: "75%",
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          justifyContent: "center",
+          marginRight: 8,
+          minHeight: 42,
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontSize: 16,
+            lineHeight: 18,
+          }}
+        >
+          {text}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function MessageBubbleFriend({ text, friend }) {
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        padding: 4,
+      }}
+    >
+      <Thumbnail url={friend.thumbnail} size={42} />
+      <View
+        style={{
+          backgroundColor: "#d0d2db",
+          borderRadius: 21,
+          maxWidth: "75%",
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          justifyContent: "center",
+          marginLeft: 8,
+          minHeight: 42,
+        }}
+      >
+        <Text
+          style={{
+            color: "#202020",
+            fontSize: 16,
+            lineHeight: 18,
+          }}
+        >
+          {text}
+        </Text>
+      </View>
+      <View style={{ flex: 1 }} />
+    </View>
+  );
+}
+
+function MessageBubble({ message, index, friend }) {
+  return message.is_me ? (
+    <MessageBubbleMe text={message.text} />
+  ) : (
+    <MessageBubbleFriend text={message.text} friend={friend} />
+  );
+}
 
 const MessageInput = ({ message, setMessage, onSend }) => {
   return (
@@ -79,23 +160,30 @@ const MessageHeader = ({ friend }) => {
 const MessagesScreen = ({ navigation, route }) => {
   const [message, setMessage] = useState("");
 
-  const messageSend = useGlobal(state => state.messageSend)
-  
-  const friend = route.params.friend;
-  const connectionId = route.params.id
+  const messagesList = useGlobal((state) => state.messagesList);
 
-  useEffect(() => {
+  const messageList = useGlobal((state) => state.messageList);
+  const messageSend = useGlobal((state) => state.messageSend);
+
+  const friend = route.params.friend;
+  const connectionId = route.params.id;
+
+  // Update the header
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => <MessageHeader friend={friend} />,
     });
-  }, [navigation, friend]);
+  }, []);
+
+  useEffect(() => {
+    messageList(connectionId);
+  }, []);
 
   function onSend() {
-    const cleaned = message.replace(/\s+/g, ' ').trim()
-    console.log("onSend:",cleaned);
+    const cleaned = message.replace(/\s+/g, " ").trim();
     if (cleaned.length === 0) return;
-    messageSend(connectionId, cleaned)
-    setMessage(""); 
+    messageSend(connectionId, cleaned);
+    setMessage("");
   }
 
   return (
@@ -104,10 +192,21 @@ const MessagesScreen = ({ navigation, route }) => {
         <View
           style={{
             flex: 1,
-            borderWidth: 6,
-            borderBlockColor: "red",
           }}
-        ></View>
+        >
+          <FlatList
+            automaticallyAdjustKeyboardInsets={true}
+            contentContainerStyle={{
+              paddingTop: 30,
+            }}
+            data={messagesList}
+            inverted={true}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item, index }) => (
+              <MessageBubble index={index} message={item} friend={friend} />
+            )}
+          />
+        </View>
       </TouchableWithoutFeedback>
       <MessageInput message={message} setMessage={setMessage} onSend={onSend} />
     </SafeAreaView>

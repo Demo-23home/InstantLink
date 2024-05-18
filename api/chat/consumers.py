@@ -12,6 +12,7 @@ from accounts.serializers import (
 from accounts.models import User, Connection
 from chat.models import Message
 from django.db.models import Q, Exists, OuterRef
+from chat.serializers import MessageSerializer
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -52,8 +53,12 @@ class ChatConsumer(WebsocketConsumer):
         if data_source == "friend.list":
             self.receive_friend_list(data)
 
+        # Message List
+        elif data_source == "message.list":
+            self.receive_message_list(data)
+
         # Message has been sent
-        if data_source == "message.send":
+        elif data_source == "message.send":
             self.receive_message_send(data)
 
         # Accept Friedn Request
@@ -76,6 +81,40 @@ class ChatConsumer(WebsocketConsumer):
         elif data_source == "thumbnail":
             self.receive_thumbnail(data)
 
+    def receive_message_list(self, data):
+        user = self.scope["user"]
+        connectionId = data.get("connectionId")
+        page = data.get("page")
+
+        try:
+            connection = Connection.objects.get(id=connectionId)
+        except Connection.DoesNotExist:
+            print("Error: couldn't find connection")
+            return
+        
+        # Get Messages
+        messages = Message.objects.filter(connection=connection).order_by("-created")
+        
+        # Serialized Messages
+        serialized_messages = MessageSerializer(messages, context={"user":user}, many=True)
+        
+        # Get recipient friend
+        recipient = connection.sender
+        if connection.sender != user:
+            recipient = connection.receiver
+
+        # Serialize Friend
+        serialized_friend = UserSerializer(recipient)
+
+        data = {
+            'messages': serialized_messages.data,
+            'friend': serialized_friend.data
+        }
+
+        # Send back to the requestor
+        self.send_group(user.username, 'message.list', data)
+
+
     def receive_message_send(self, data):
         user = self.scope["user"]
         connectionId = data.get("connectionId")
@@ -86,7 +125,7 @@ class ChatConsumer(WebsocketConsumer):
         except Connection.DoesNotExist:
             print("Error: couldn't find connection")
             return
-        
+
         message = Message.objects.create(
             user=user, connection=connection, text=message_text
         )
