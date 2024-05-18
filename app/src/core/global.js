@@ -10,8 +10,8 @@ import { useReducer } from "react";
 
 function responseFriendList(set, get, friendList) {
   set((state) => ({
-    friendList:friendList
-  }))
+    friendList: friendList,
+  }));
 }
 
 function responseRequestAccept(set, get, connection) {
@@ -293,6 +293,21 @@ const useGlobal = create((set, get) => ({
   //---------------------
 
   friendList: null,
+
+  //---------------------
+  //     Messages
+  //---------------------
+
+  messageSend: (connectionId, message) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: "message.send",
+        connectionId: connectionId,
+        message: message,
+      })
+    );
+  },
 
   //---------------------
   //     Requests
