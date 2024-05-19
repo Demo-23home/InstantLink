@@ -116,19 +116,57 @@ class ChatConsumer(WebsocketConsumer):
 
 
     def receive_message_send(self, data):
-        user = self.scope["user"]
-        connectionId = data.get("connectionId")
-        message_text = data.get("message")
-
+        user = self.scope['user']
+        connectionId = data.get('connectionId')
+        message_text = data.get('message')
         try:
             connection = Connection.objects.get(id=connectionId)
         except Connection.DoesNotExist:
-            print("Error: couldn't find connection")
+            print('Error: couldnt find connection')
             return
-
+		
         message = Message.objects.create(
-            user=user, connection=connection, text=message_text
-        )
+			connection=connection,
+			user=user,
+			text=message_text
+		)
+
+		# Get recipient friend
+        recipient = connection.sender
+        if connection.sender == user:
+            recipient = connection.receiver
+
+		# Send new message back to sender
+        serialized_message = MessageSerializer(
+			message,
+			context={
+				'user': user
+			}
+		)
+        serialized_friend = UserSerializer(recipient)
+        data = {
+			'message': serialized_message.data,
+			'friend': serialized_friend.data
+		}
+        self.send_group(user.username, 'message.send', data)
+
+		# Send new message to receiver
+        serialized_message = MessageSerializer(
+			message,
+			context={
+				'user': recipient
+			}
+		)
+        serialized_friend = UserSerializer(user)
+        data = {
+			'message': serialized_message.data,
+			'friend': serialized_friend.data
+		}
+        self.send_group(recipient.username, 'message.send', data)
+
+
+
+
 
     def receive_friend_list(self, data):
         user = self.scope["user"]

@@ -19,6 +19,7 @@ function MessageBubbleMe({ text }) {
       style={{
         flexDirection: "row",
         padding: 4,
+        paddingRight: 12,
       }}
     >
       <View style={{ flex: 1 }} />
@@ -55,6 +56,7 @@ function MessageBubbleFriend({ text, friend }) {
       style={{
         flexDirection: "row",
         padding: 4,
+        paddingLeft: 16,
       }}
     >
       <Thumbnail url={friend.thumbnail} size={42} />
@@ -201,7 +203,7 @@ const MessagesScreen = ({ navigation, route }) => {
             }}
             data={messagesList}
             inverted={true}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
             renderItem={({ item, index }) => (
               <MessageBubble index={index} message={item} friend={friend} />
             )}

@@ -13,6 +13,5 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'is_me', 'text', 'created']
 
     def get_is_me(self, obj):
-        user = self.context['user']
-        return user == obj.user
+        return self.context['user'] == obj.user
 
