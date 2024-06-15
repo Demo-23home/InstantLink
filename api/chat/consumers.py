@@ -12,6 +12,7 @@ from accounts.serializers import (
 from accounts.models import User, Connection
 from chat.models import Message
 from django.db.models import Q, Exists, OuterRef
+from django.db.models.functions import Coalesce
 from chat.serializers import MessageSerializer
 
 
@@ -91,13 +92,15 @@ class ChatConsumer(WebsocketConsumer):
         except Connection.DoesNotExist:
             print("Error: couldn't find connection")
             return
-        
+
         # Get Messages
         messages = Message.objects.filter(connection=connection).order_by("-created")
-        
+
         # Serialized Messages
-        serialized_messages = MessageSerializer(messages, context={"user":user}, many=True)
-        
+        serialized_messages = MessageSerializer(
+            messages, context={"user": user}, many=True
+        )
+
         # Get recipient friend
         recipient = connection.sender
         if connection.sender != user:
@@ -106,73 +109,57 @@ class ChatConsumer(WebsocketConsumer):
         # Serialize Friend
         serialized_friend = UserSerializer(recipient)
 
-        data = {
-            'messages': serialized_messages.data,
-            'friend': serialized_friend.data
-        }
+        data = {"messages": serialized_messages.data, "friend": serialized_friend.data}
 
         # Send back to the requestor
-        self.send_group(user.username, 'message.list', data)
-
+        self.send_group(user.username, "message.list", data)
 
     def receive_message_send(self, data):
-        user = self.scope['user']
-        connectionId = data.get('connectionId')
-        message_text = data.get('message')
+        user = self.scope["user"]
+        connectionId = data.get("connectionId")
+        message_text = data.get("message")
         try:
             connection = Connection.objects.get(id=connectionId)
         except Connection.DoesNotExist:
-            print('Error: couldnt find connection')
+            print("Error: couldnt find connection")
             return
-		
-        message = Message.objects.create(
-			connection=connection,
-			user=user,
-			text=message_text
-		)
 
-		# Get recipient friend
+        message = Message.objects.create(
+            connection=connection, user=user, text=message_text
+        )
+
+        # Get recipient friend
         recipient = connection.sender
         if connection.sender == user:
             recipient = connection.receiver
 
-		# Send new message back to sender
-        serialized_message = MessageSerializer(
-			message,
-			context={
-				'user': user
-			}
-		)
+        # Send new message back to sender
+        serialized_message = MessageSerializer(message, context={"user": user})
         serialized_friend = UserSerializer(recipient)
-        data = {
-			'message': serialized_message.data,
-			'friend': serialized_friend.data
-		}
-        self.send_group(user.username, 'message.send', data)
+        data = {"message": serialized_message.data, "friend": serialized_friend.data}
+        self.send_group(user.username, "message.send", data)
 
-		# Send new message to receiver
-        serialized_message = MessageSerializer(
-			message,
-			context={
-				'user': recipient
-			}
-		)
+        # Send new message to receiver
+        serialized_message = MessageSerializer(message, context={"user": recipient})
         serialized_friend = UserSerializer(user)
-        data = {
-			'message': serialized_message.data,
-			'friend': serialized_friend.data
-		}
-        self.send_group(recipient.username, 'message.send', data)
-
-
-
-
+        data = {"message": serialized_message.data, "friend": serialized_friend.data}
+        self.send_group(recipient.username, "message.send", data)
 
     def receive_friend_list(self, data):
         user = self.scope["user"]
+        # lastest message subquery
+        latest_message = Message.objects.filter(connection=OuterRef("id")).order_by(
+            "-created"
+        )[:1]
+
         # Get the connections of the user
-        connections = Connection.objects.filter(
-            Q(sender=user) | Q(receiver=user), accepted=True
+        connections = (
+            Connection.objects.filter(Q(sender=user) | Q(receiver=user), accepted=True)
+            .annotate(
+                latest_text=latest_message.values("text"),
+                latest_created=latest_message.values("created"),
+            )
+            .order_by(Coalesce("latest_created", "updated").desc())
         )
 
         serialized = FriendSerializer(connections, context={"user": user}, many=True)
