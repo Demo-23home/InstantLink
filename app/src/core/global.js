@@ -14,11 +14,18 @@ function responseFriendList(set, get, friendList) {
   }));
 }
 
+function responseFriendNew(set, get, friend) {
+  const friendList = [friend, ...get().friendList]
+  set((state) => ({
+    friendList: friendList,
+  }));
+}
+
 function responseMessageList(set, get, data) {
-	set((state) => ({
-		messagesList: [...get().messagesList, ...data.messages],
-		messagesUsername: data.friend.username
-	}))
+  set((state) => ({
+    messagesList: [...get().messagesList, ...data.messages],
+    messagesUsername: data.friend.username,
+  }));
 }
 
 function responseMessageSend(set, get, data) {
@@ -253,6 +260,7 @@ const useGlobal = create((set, get) => ({
 
       const responses = {
         "friend.list": responseFriendList,
+        "friend.new": responseFriendNew,
         "message.list": responseMessageList,
         "message.send": responseMessageSend,
         "request.accept": responseRequestAccept,

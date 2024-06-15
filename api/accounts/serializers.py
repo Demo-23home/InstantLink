@@ -19,7 +19,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             last_name=last_name,
         )
 
-        password = validated_data['password']
+        password = validated_data["password"]
         user.set_password(password)
         user.save()
         return user
@@ -39,13 +39,12 @@ class UserSerializer(serializers.ModelSerializer):
         return fname + " " + lname
 
 
-
-
 class SearchSerializer(UserSerializer):
     status = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields =('username', 'name', 'thumbnail', 'status')
+        fields = ("username", "name", "thumbnail", "status")
 
     def get_status(self, obj):
         if obj.pending_them:
@@ -54,51 +53,46 @@ class SearchSerializer(UserSerializer):
             return "pending-me"
         elif obj.connected:
             return "connected"
-        return 'no-connection'
-    
+        return "no-connection"
 
 
 class RequestSerializer(serializers.ModelSerializer):
     sender = UserSerializer()
     receiver = UserSerializer()
+
     class Meta:
         model = Connection
-        fields = ('sender', 'receiver', 'accepted', 'updated', 'created')
-
-
-
+        fields = ("sender", "receiver", "accepted", "updated", "created")
 
 
 class FriendSerializer(serializers.ModelSerializer):
     friend = serializers.SerializerMethodField()
     preview = serializers.SerializerMethodField()
     updated = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Connection
-        fields = ['id', 'friend', 'preview', 'updated']
-    
+        fields = ["id", "friend", "preview", "updated"]
+
     def get_friend(self, obj):
-        # if Iam the sender
-        user = self.context['user']
+        # if I am the sender
+        user = self.context["user"]
         if user == obj.sender:
             return UserSerializer(obj.receiver).data
-        
-        # if Iam the receiver
+
+        # if I am the receiver
         elif user == obj.receiver:
             return UserSerializer(obj.sender).data
-        
+
         else:
             print("Error, NO User found in FriendSerializer")
 
     def get_preview(self, obj):
-        if not obj.latest_text:
+        if not hasattr(obj, "latest_text"):
             return "New Connection"
         return obj.latest_text
-    
-
 
     def get_updated(self, obj):
-        date = obj.latest_created or obj.updated
-        return date.isoformat()
-        
+        # Use obj.updated as a default value if obj.latest_created is not set
+        date = getattr(obj, "latest_created", None) or obj.updated
+        return date.isoformat() if date else None

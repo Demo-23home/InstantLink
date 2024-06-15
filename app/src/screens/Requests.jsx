@@ -5,6 +5,7 @@ import Empty from "../common/Empty";
 import Cell from "../common/Cell";
 import Thumbnail from "../common/Thumbnail";
 import { TouchableOpacity } from "react-native";
+import utils from "../core/utils";
 
 function RequestAccept({ item }) {
   const requestAccept = useGlobal((state) => state.requestAccept);
@@ -28,7 +29,7 @@ function RequestAccept({ item }) {
 
 function ReqeustRow({ item }) {
   const message = "Reqeusted to connect with you";
-  const time = "7m ago";
+  // const time = "7m ago";
   return (
     <Cell>
       <Thumbnail url={item.sender.Thumbnail} size={67} />
@@ -48,7 +49,9 @@ function ReqeustRow({ item }) {
           }}
         >
           {message}{" "}
-          <Text style={{ color: "#909090", fontSize: 13 }}>{time}</Text>
+          <Text style={{ color: "#909090", fontSize: 13 }}>
+          {utils.formatTime(item.created)}
+          </Text>
         </Text>
       </View>
       <RequestAccept item={item} />

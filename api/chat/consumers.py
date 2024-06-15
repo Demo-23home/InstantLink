@@ -189,6 +189,24 @@ class ChatConsumer(WebsocketConsumer):
         # Send accepted reqeust to the receiver
         self.send_group(connection.receiver.username, "request.accept", serialized.data)
 
+        # Send new friend object to the sender
+        serialized_friend = FriendSerializer(
+            connection, context={"user": connection.sender}
+        )
+
+        self.send_group(
+            connection.sender.username, "friend.new", serialized_friend.data
+        )
+
+        # Send new friend object to the reciever
+        serialized_friend = FriendSerializer(
+            connection, context={"user": connection.receiver}
+        )
+
+        self.send_group(
+            connection.receiver.username, "friend.new", serialized_friend.data
+        )
+
     def receive_request_connect(self, data):
         username = data.get("username")
         # Attemp to fetch the receiving user
