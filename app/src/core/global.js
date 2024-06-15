@@ -2,7 +2,6 @@ import { create } from "zustand";
 import secure from "./secure";
 import api, { ADDRESS } from "./api";
 import utils from "./utils";
-import { useReducer } from "react";
 
 //-------------------------------------
 //     Socket receive message handlers
@@ -15,7 +14,7 @@ function responseFriendList(set, get, friendList) {
 }
 
 function responseFriendNew(set, get, friend) {
-  const friendList = [friend, ...get().friendList]
+  const friendList = [friend, ...get().friendList];
   set((state) => ({
     friendList: friendList,
   }));
@@ -24,6 +23,7 @@ function responseFriendNew(set, get, friend) {
 function responseMessageList(set, get, data) {
   set((state) => ({
     messagesList: [...get().messagesList, ...data.messages],
+    messagesNext: data.next,
     messagesUsername: data.friend.username,
   }));
 }
@@ -52,10 +52,10 @@ function responseMessageSend(set, get, data) {
   if (username !== get().messagesUsername) {
     return;
   }
-
   const messagesList = [data.message, ...get().messagesList];
   set((state) => ({
     messagesList: messagesList,
+    messagesTyping: null,
   }));
 }
 
@@ -346,6 +346,12 @@ const useGlobal = create((set, get) => ({
   //     Messages
   //---------------------
 
+  friendList: null,
+
+  //---------------------
+  //     Messages
+  //---------------------
+
   messagesList: [],
   messagesUsername: null,
 
@@ -376,7 +382,6 @@ const useGlobal = create((set, get) => ({
       })
     );
   },
-
   //---------------------
   //     Requests
   //---------------------

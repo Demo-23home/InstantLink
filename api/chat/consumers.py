@@ -86,31 +86,35 @@ class ChatConsumer(WebsocketConsumer):
         user = self.scope["user"]
         connectionId = data.get("connectionId")
         page = data.get("page")
-
+        page_size = 15
         try:
             connection = Connection.objects.get(id=connectionId)
         except Connection.DoesNotExist:
-            print("Error: couldn't find connection")
+            print("Error: couldnt find connection")
             return
-
-        # Get Messages
-        messages = Message.objects.filter(connection=connection).order_by("-created")
-
-        # Serialized Messages
+        # Get messages
+        messages = Message.objects.filter(connection=connection).order_by("-created")[
+            page * page_size : (page + 1) * page_size
+        ]
+        # Serialized message
         serialized_messages = MessageSerializer(
             messages, context={"user": user}, many=True
         )
-
         # Get recipient friend
         recipient = connection.sender
-        if connection.sender != user:
+        if connection.sender == user:
             recipient = connection.receiver
 
-        # Serialize Friend
+        # Serialize friend
         serialized_friend = UserSerializer(recipient)
-
-        data = {"messages": serialized_messages.data, "friend": serialized_friend.data}
-
+        # Count the total number of messages for this connection
+        messages_count = Message.objects.filter(connection=connection).count()
+        next_page = page + 1 if messages_count > (page + 1) * page_size else None
+        data = {
+            "messages": serialized_messages.data,
+            "next": next_page,
+            "friend": serialized_friend.data,
+        }
         # Send back to the requestor
         self.send_group(user.username, "message.list", data)
 
@@ -127,18 +131,15 @@ class ChatConsumer(WebsocketConsumer):
         message = Message.objects.create(
             connection=connection, user=user, text=message_text
         )
-
         # Get recipient friend
         recipient = connection.sender
         if connection.sender == user:
             recipient = connection.receiver
-
         # Send new message back to sender
         serialized_message = MessageSerializer(message, context={"user": user})
         serialized_friend = UserSerializer(recipient)
         data = {"message": serialized_message.data, "friend": serialized_friend.data}
         self.send_group(user.username, "message.send", data)
-
         # Send new message to receiver
         serialized_message = MessageSerializer(message, context={"user": recipient})
         serialized_friend = UserSerializer(user)
