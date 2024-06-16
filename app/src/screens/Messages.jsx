@@ -253,6 +253,7 @@ const MessagesScreen = ({ navigation, route }) => {
   const messagesList = useGlobal((state) => state.messagesList);
 
   const messageList = useGlobal((state) => state.messageList);
+  const messagesNext = useGlobal((state) => state.messagesNext);
   const messageSend = useGlobal((state) => state.messageSend);
   const messageType = useGlobal((state) => state.messageType);
 
@@ -296,6 +297,11 @@ const MessagesScreen = ({ navigation, route }) => {
               paddingTop: 30,
             }}
             data={[{ id: -1 }, ...messagesList]}
+            onEndReached={()=> {
+              if (messagesNext) {
+                messageList(connectionId, messagesNext)
+              }
+            }}
             inverted={true}
             keyExtractor={(item, index) => `${item.id}-${index}`}
             renderItem={({ item, index }) => (

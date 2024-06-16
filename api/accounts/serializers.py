@@ -88,9 +88,10 @@ class FriendSerializer(serializers.ModelSerializer):
             print("Error, NO User found in FriendSerializer")
 
     def get_preview(self, obj):
+        default = "New Connection"
         if not hasattr(obj, "latest_text"):
-            return "New Connection"
-        return obj.latest_text
+            return default
+        return obj.latest_text or default
 
     def get_updated(self, obj):
         # Use obj.updated as a default value if obj.latest_created is not set
