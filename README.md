@@ -1,8 +1,10 @@
-# RealTimeChattingApp-DRF-ReactNative
+# InstantLink
+
+![InstantLink Logo](/InstantLink.png)
 
 ## Overview
 
-RealTimeChattingApp is a modern chat application built using Django Rest Framework (DRF) for the backend and React Native for the Mobile. The app supports real-time communication using WebSockets, allowing for instant messaging between users. Key features include user authentication, friend requests, real-time messaging, and message pagination.
+InstantLink is a modern chat application built using Django Rest Framework (DRF) for the backend and React Native for the Mobile. The app supports real-time communication using WebSockets, allowing for instant messaging between users. Key features include user authentication, friend requests, real-time messaging, and message pagination.
 
 ## Features
 
