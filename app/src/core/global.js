@@ -59,6 +59,13 @@ function responseMessageSend(set, get, data) {
   }));
 }
 
+function responseMessageType(set, get, data) {
+  if (data.username !== get().messagesUsername) return;
+  set((state) => ({
+    messagesTyping: new Date(),
+  }));
+}
+
 function responseRequestAccept(set, get, connection) {
   const user = get().user;
   // if i was the one who sent the request, remove
@@ -263,6 +270,7 @@ const useGlobal = create((set, get) => ({
         "friend.new": responseFriendNew,
         "message.list": responseMessageList,
         "message.send": responseMessageSend,
+        "message.type": responseMessageType,
         "request.accept": responseRequestAccept,
         "request.connect": responseRequestConnect,
         "request.list": responseRequestList,
@@ -353,12 +361,14 @@ const useGlobal = create((set, get) => ({
   //---------------------
 
   messagesList: [],
+  messagesTyping: null,
   messagesUsername: null,
 
   messageList: (connectionId, page = 0) => {
     if (page === 0) {
       set((state) => ({
         messagesList: [],
+        messagesTyping: null,
         messagesUsername: null,
       }));
     }
@@ -382,6 +392,17 @@ const useGlobal = create((set, get) => ({
       })
     );
   },
+
+  messageType: (username) => {
+    const socket = get().socket;
+    socket.send(
+      JSON.stringify({
+        source: "message.type",
+        username: username,
+      })
+    );
+  },
+  
   //---------------------
   //     Requests
   //---------------------
