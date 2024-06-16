@@ -34,8 +34,8 @@ InstantLink is a modern chat application built using Django Rest Framework (DRF)
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/Demo-23home/RealTimeChatinngApp-DRF-ReactNative.git
-    cd RealTimeChattingApp-DRF-ReactNative
+    git clone https://github.com/Demo-23home/InstantLink.git
+    cd InstantLink
     ```
 
 2. Create a virtual environment and activate it:
@@ -96,8 +96,8 @@ Contributions are welcome! If you have ideas for improvements or have found bugs
 
 2. **Clone your fork**: Clone your forked repository to your local machine.
     ```bash
-    git clone https://github.com/Demo-23home/RealTimeChatinngApp-DRF-ReactNative.git
-    cd RealTimeChattingApp-DRF-ReactNative
+    git https://github.com/Demo-23home/InstantLink.git
+    cd InstantLink
     ```
 
 3. **Create a new branch**: Create a new branch for your feature or bug fix.
@@ -121,7 +121,7 @@ Contributions are welcome! If you have ideas for improvements or have found bugs
 
 8. **Review process**: Your pull request will be reviewed by the project maintainers. Be prepared to make any necessary changes based on feedback.
 
-Thank you for contributing to the RealTimeChattingApp project!
+Thank you for contributing to the InstantLink project!
 
 ## License
 
